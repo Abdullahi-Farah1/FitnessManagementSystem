@@ -227,7 +227,7 @@ public class AdminController implements Initializable {
 
         ObservableList<TrainerData> listData = FXCollections.observableArrayList();
 
-        String sql = "select * from trainers";
+        String sql = "SELECT * FROM trainers";
 
         connect = Database.connectDB();
 

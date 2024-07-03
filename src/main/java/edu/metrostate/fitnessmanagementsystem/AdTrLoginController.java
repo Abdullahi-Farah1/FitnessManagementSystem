@@ -85,7 +85,8 @@ public class AdTrLoginController implements Initializable {
     private ResultSet result;
 
     public void adminlogin() {
-        String sql = "select * from admin where username = ? and password = ?";
+
+        String sql = "SELECT * FROM admin WHERE username = ? AND password = ?";
 
         connect = Database.connectDB();
 
@@ -118,6 +119,44 @@ public class AdTrLoginController implements Initializable {
                     Stage stage = (Stage) admin_loginBtn.getScene().getWindow();
                     stage.setScene(new Scene(root));
                     stage.show();
+                } else {
+                    alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Error");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Wrong Username or Password");
+                    alert.showAndWait();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    public void trainerLogin() {
+        String sql = "SELECT * FROM trainers WHERE username = ? AND password = ?";
+
+        connect = Database.connectDB();
+
+        try {
+            prepare = connect.prepareStatement(sql);
+            prepare.setString(1, trainer_username.getText());
+            prepare.setString(2, trainer_password.getText());
+            result = prepare.executeQuery();
+
+            Alert alert;
+
+            if (trainer_username.getText().isEmpty() || trainer_password.getText().isEmpty()) {
+                alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText(null);
+                alert.setContentText("Please do not leave the fields blank.");
+                alert.showAndWait();
+            } else {
+                if (result.next()) {
+                    alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Success");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Login Successful");
+                    alert.showAndWait();
                 } else {
                     alert = new Alert(Alert.AlertType.ERROR);
                     alert.setTitle("Error");

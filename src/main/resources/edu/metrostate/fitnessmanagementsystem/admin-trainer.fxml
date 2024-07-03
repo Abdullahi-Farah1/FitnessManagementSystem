@@ -78,7 +78,7 @@
                         </Label>
                         <TextField fx:id="trainer_username" layoutX="15.0" layoutY="240.0" prefHeight="45.0" prefWidth="320.0" promptText="Username" styleClass="textfield" stylesheets="@loginDesign.css" />
                         <PasswordField fx:id="trainer_password" layoutX="15.0" layoutY="293.0" prefHeight="45.0" prefWidth="320.0" promptText="password" styleClass="textfield" stylesheets="@loginDesign.css" />
-                        <Button fx:id="trainer_loginBtn" layoutX="80.0" layoutY="367.0" mnemonicParsing="false" onAction="#adminlogin" prefHeight="45.0" prefWidth="220.0" stylesheets="@loginDesign.css" text="Login" textFill="WHITE">
+                        <Button fx:id="trainer_loginBtn" layoutX="80.0" layoutY="367.0" mnemonicParsing="false" onAction="#trainerLogin" prefHeight="45.0" prefWidth="220.0" stylesheets="@loginDesign.css" text="Login" textFill="WHITE">
                             <font>
                                 <Font size="17.0" />
                             </font>
