@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
+<?import java.lang.String?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.paint.Color?>
+<?import javafx.scene.paint.LinearGradient?>
+<?import javafx.scene.paint.Stop?>
+<?import javafx.scene.text.Font?>
+
+<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="edu.metrostate.fitnessmanagementsystem.MainController">
+  <children>
+    <AnchorPane fx:id="main_form" prefHeight="300.0" prefWidth="350.0">
+      <children>
+        <AnchorPane fx:id="signup_form" prefHeight="500.0" prefWidth="350.0">
+          <children>
+            <FontAwesomeIconView glyphName="USER_PLUS" layoutX="132.0" layoutY="147.0" size="10em" styleClass="user">
+              <fill>
+                <LinearGradient endX="1.0" endY="1.0">
+                  <stops>
+                    <Stop>
+                      <color>
+                        <Color green="0.14901961386203766" blue="0.16078431904315948" />
+                      </color>
+                    </Stop>
+                    <Stop offset="1.0">
+                      <color>
+                        <Color red="1.0" green="0.7882353067398071" />
+                      </color>
+                    </Stop>
+                  </stops>
+                </LinearGradient>
+              </fill>
+            </FontAwesomeIconView>
+            <Label layoutX="141.0" layoutY="165.0" text="Sign Up">
+              <font>
+                <Font name="Berlin Sans FB" size="25.0" />
+              </font>
+            </Label>
+            <TextField fx:id="su_username" layoutX="21.0" layoutY="267.0" prefHeight="45.0" prefWidth="320.0" promptText="Username" styleClass="textfield" stylesheets="@loginDesign.css" />
+            <TextField fx:id="su_email" layoutX="21.0" layoutY="213.0" prefHeight="45.0" prefWidth="320.0" promptText="Email" styleClass="textfield" stylesheets="@loginDesign.css" />
+            <PasswordField fx:id="su_password" layoutX="21.0" layoutY="323.0" prefHeight="45.0" prefWidth="320.0" promptText="password" styleClass="textfield" stylesheets="@loginDesign.css" />
+            <Button fx:id="su_signupBtn" layoutX="80.0" layoutY="384.0" mnemonicParsing="false" onAction="#signup" prefHeight="45.0" prefWidth="220.0" styleClass="login-btn" stylesheets="@loginDesign.css" text="SignUp" textFill="WHITE">
+              <font>
+                <Font size="17.0" />
+              </font>
+            </Button>
+          </children>
+        </AnchorPane>
+        <AnchorPane fx:id="clientlogin_form" layoutX="10.0" layoutY="10.0" prefHeight="500.0" prefWidth="350.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+          <children>
+            <FontAwesomeIconView glyphName="USER" layoutX="147.0" layoutY="179.0" size="10em" styleClass="user">
+              <fill>
+                <LinearGradient endX="1.0" endY="1.0">
+                  <stops>
+                    <Stop>
+                      <color>
+                        <Color green="0.14901961386203766" blue="0.16078431904315948" />
+                      </color>
+                    </Stop>
+                    <Stop offset="1.0">
+                      <color>
+                        <Color red="1.0" green="0.7882353067398071" />
+                      </color>
+                    </Stop>
+                  </stops>
+                </LinearGradient>
+              </fill>
+            </FontAwesomeIconView>
+            <Label layoutX="156.0" layoutY="197.0" text="Sign In">
+              <font>
+                <Font name="Berlin Sans FB" size="25.0" />
+              </font>
+            </Label>
+            <TextField fx:id="client_username" layoutX="15.0" layoutY="240.0" prefHeight="45.0" prefWidth="320.0" promptText="Username" styleClass="textfield" stylesheets="@loginDesign.css" />
+            <PasswordField fx:id="client_password" layoutX="15.0" layoutY="293.0" prefHeight="45.0" prefWidth="320.0" promptText="password" styleClass="textfield" stylesheets="@loginDesign.css" />
+            <Button fx:id="client_loginBtn" layoutX="80.0" layoutY="367.0" mnemonicParsing="false" onAction="#login" prefHeight="45.0" prefWidth="220.0" stylesheets="@loginDesign.css" text="Login" textFill="WHITE">
+              <font>
+                <Font size="17.0" />
+              </font>
+                     <styleClass>
+                        <String fx:value="login-btn" />
+                        <String fx:value="shadow" />
+                     </styleClass>
+            </Button>
+                  <Button fx:id="changtoadmin" layoutX="205.0" layoutY="455.0" mnemonicParsing="false" onAction="#switchScene" stylesheets="@loginDesign.css" text="Admin/Trainer" textFill="WHITE">
+                     <font>
+                        <Font size="15.0" />
+                     </font>
+                     <styleClass>
+                        <String fx:value="login-btn" />
+                        <String fx:value="shadow" />
+                     </styleClass>
+                  </Button>
+          </children>
+        </AnchorPane>
+        <AnchorPane fx:id="sub_form" prefHeight="500.0" prefWidth="350.0" styleClass="side-form" stylesheets="@loginDesign.css" AnchorPane.leftAnchor="0.0">
+          <children>
+            <FontAwesomeIconView fill="WHITE" glyphName="USERS" layoutX="69.0" layoutY="214.0" size="15em" text="" />
+            <Button fx:id="sub_signupBtn" layoutX="59.0" layoutY="447.0" mnemonicParsing="false" onAction="#signupSlider" prefHeight="39.0" prefWidth="234.0" stylesheets="@loginDesign.css" text="Sign Up">
+                     <styleClass>
+                        <String fx:value="side-btn" />
+                        <String fx:value="shadow" />
+                     </styleClass></Button>
+            <Button fx:id="sub_loginBtn" layoutX="59.0" layoutY="447.0" mnemonicParsing="false" onAction="#loginSlider" prefHeight="39.0" prefWidth="234.0" styleClass="side-btn" stylesheets="@loginDesign.css" text="Sign In" visible="false" />
+            <Label fx:id="edit_label" layoutX="74.0" layoutY="399.0" styleClass="white-text" stylesheets="@loginDesign.css" text="Create An Account" textFill="WHITE">
+              <font>
+                <Font name="Tahoma" size="25.0" />
+              </font>
+            </Label>
+            <Label layoutX="17.0" layoutY="250.0" text="Fitness Management System" textFill="WHITE">
+              <font>
+                <Font size="25.0" />
+              </font>
+            </Label>
+          </children>
+        </AnchorPane>
+        <AnchorPane prefHeight="45.0" prefWidth="700.0">
+          <children>
+            <Button fx:id="close" mnemonicParsing="false" onAction="#close" prefHeight="24.0" prefWidth="47.0" styleClass="close" stylesheets="@loginDesign.css" AnchorPane.rightAnchor="2.0" AnchorPane.topAnchor="2.0">
+              <graphic>
+                <FontAwesomeIconView fx:id="close_Icon" glyphName="CLOSE" />
+              </graphic>
+            </Button>
+          </children>
+        </AnchorPane>
+      </children>
+    </AnchorPane>
+  </children>
+</StackPane>

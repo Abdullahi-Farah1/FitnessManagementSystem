@@ -1,0 +1,67 @@
+
+.side-form {
+    -fx-background-color: linear-gradient(to top right, #002629,  #ffc900);
+    -fx-border-color: #000;
+    -fx-border-width: .4px .2px .4px .4px;
+}
+
+.close {
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+}
+
+.close:hover {
+    -fx-background-color: #e81313;
+}
+
+.side-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #fff;
+    -fx-font-family: Arial;
+    -fx-font-size: 14px;
+    -fx-border-color: #fff;
+    -fx-border-width: .5px;
+}
+
+.side-btn:hover {
+    -fx-background-color: #ffc900;
+    -fx-text-fill: #000;
+}
+
+.login-form {
+    -fx-background-color: #fff;
+    -fx-border-color: #000;
+    -fx-border-width: .4px .4px .4px .2px;
+
+}
+
+.login-btn {
+    -fx-background-color: linear-gradient(to top right,  #002629, #ffc900);
+    -fx-cursor: hand;
+    -fx-text-fill: #fff;
+}
+
+.login-btn:hover {
+    -fx-background-color: linear-gradient(to top right, #ffc900, #ffc900);
+    -fx-text-fill: #000;
+    -fx-font-family: Arial;
+
+}
+
+.textfield {
+    -fx-background-color: #efefef;
+    -fx-font-size: 13px;
+    -fx-font-family: Tahoma;
+    -fx-border-color: #000;
+    -fx-border-width: .5px;
+}
+
+.textfield:focused {
+    -fx-background-color: #fff;
+    -fx-border-width: 1px;
+    -fx-border-color: #ffc900;
+}
+
+.shadow {
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.5), 8,0,0,0);
+}

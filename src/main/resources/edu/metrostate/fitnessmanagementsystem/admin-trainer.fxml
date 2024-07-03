@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
+<?import java.lang.String?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.paint.Color?>
+<?import javafx.scene.paint.LinearGradient?>
+<?import javafx.scene.paint.Stop?>
+<?import javafx.scene.text.Font?>
+
+<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="edu.metrostate.fitnessmanagementsystem.AdTrLoginController">
+    <children>
+        <AnchorPane fx:id="adminMain_form" prefHeight="300.0" prefWidth="350.0">
+            <children>
+                <AnchorPane fx:id="admin_form" prefHeight="500.0" prefWidth="350.0">
+                    <children>
+                        <FontAwesomeIconView glyphName="SHIELD" layoutX="111.0" layoutY="194.0" size="15em" styleClass="user">
+                            <fill>
+                                <LinearGradient endX="1.0" endY="1.0">
+                                    <stops>
+                                        <Stop>
+                                            <color>
+                                                <Color green="0.14901961386203766" blue="0.16078431904315948" />
+                                            </color>
+                                        </Stop>
+                                        <Stop offset="1.0">
+                                            <color>
+                                                <Color red="1.0" green="0.7882353067398071" />
+                                            </color>
+                                        </Stop>
+                                    </stops>
+                                </LinearGradient>
+                            </fill>
+                        </FontAwesomeIconView>
+                        <Label layoutX="146.0" layoutY="221.0" text="Admin">
+                            <font>
+                                <Font name="Berlin Sans FB" size="25.0" />
+                            </font>
+                        </Label>
+                        <TextField fx:id="admin_username" layoutX="21.0" layoutY="267.0" prefHeight="45.0" prefWidth="320.0" promptText="Username" styleClass="textfield" stylesheets="@loginDesign.css" />
+                        <PasswordField fx:id="admin_password" layoutX="21.0" layoutY="323.0" prefHeight="45.0" prefWidth="320.0" promptText="password" styleClass="textfield" stylesheets="@loginDesign.css" />
+                        <Button fx:id="admin_loginBtn" layoutX="80.0" layoutY="384.0" mnemonicParsing="false" onAction="#adminlogin" prefHeight="45.0" prefWidth="220.0" styleClass="login-btn" stylesheets="@loginDesign.css" text="Login" textFill="WHITE">
+                            <font>
+                                <Font size="17.0" />
+                            </font>
+                        </Button>
+                    </children>
+                </AnchorPane>
+                <AnchorPane fx:id="trainer_form" layoutX="10.0" layoutY="10.0" prefHeight="500.0" prefWidth="350.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <children>
+                        <FontAwesomeIconView glyphName="USER" layoutX="147.0" layoutY="179.0" size="10em" styleClass="user">
+                            <fill>
+                                <LinearGradient endX="1.0" endY="1.0">
+                                    <stops>
+                                        <Stop>
+                                            <color>
+                                                <Color green="0.14901961386203766" blue="0.16078431904315948" />
+                                            </color>
+                                        </Stop>
+                                        <Stop offset="1.0">
+                                            <color>
+                                                <Color red="1.0" green="0.7882353067398071" />
+                                            </color>
+                                        </Stop>
+                                    </stops>
+                                </LinearGradient>
+                            </fill>
+                        </FontAwesomeIconView>
+                        <Label layoutX="156.0" layoutY="197.0" text="Trainer">
+                            <font>
+                                <Font name="Berlin Sans FB" size="25.0" />
+                            </font>
+                        </Label>
+                        <TextField fx:id="trainer_username" layoutX="15.0" layoutY="240.0" prefHeight="45.0" prefWidth="320.0" promptText="Username" styleClass="textfield" stylesheets="@loginDesign.css" />
+                        <PasswordField fx:id="trainer_password" layoutX="15.0" layoutY="293.0" prefHeight="45.0" prefWidth="320.0" promptText="password" styleClass="textfield" stylesheets="@loginDesign.css" />
+                        <Button fx:id="trainer_loginBtn" layoutX="80.0" layoutY="367.0" mnemonicParsing="false" onAction="#adminlogin" prefHeight="45.0" prefWidth="220.0" stylesheets="@loginDesign.css" text="Login" textFill="WHITE">
+                            <font>
+                                <Font size="17.0" />
+                            </font>
+                     <styleClass>
+                        <String fx:value="login-btn" />
+                        <String fx:value="shadow" />
+                     </styleClass>
+                        </Button>
+                  <Button fx:id="changetoclient" layoutX="269.0" layoutY="457.0" mnemonicParsing="false" onAction="#switchScene" stylesheets="@loginDesign.css" text="Client" textFill="WHITE">
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                     <styleClass>
+                        <String fx:value="login-btn" />
+                        <String fx:value="shadow" />
+                     </styleClass>
+                  </Button>
+                    </children>
+                </AnchorPane>
+                <AnchorPane fx:id="adminMain_form" prefHeight="500.0" prefWidth="350.0" styleClass="side-form" stylesheets="@loginDesign.css" AnchorPane.leftAnchor="0.0">
+                    <children>
+                  <FontAwesomeIconView fx:id="shield" glyphName="SHIELD" layoutX="110.0" layoutY="223.0" size="15em" />
+                        <Button fx:id="admin_switchBtn" layoutX="93.0" layoutY="447.0" mnemonicParsing="false" onAction="#adminSlider" prefHeight="39.0" prefWidth="179.0" stylesheets="@loginDesign.css" text="Login">
+                     <styleClass>
+                        <String fx:value="side-btn" />
+                        <String fx:value="shadow" />
+                     </styleClass></Button>
+                        <Button fx:id="trainer_switch" layoutX="93.0" layoutY="447.0" mnemonicParsing="false" onAction="#trainerSlider" prefHeight="39.0" prefWidth="179.0" styleClass="side-btn" stylesheets="@loginDesign.css" text="Login" visible="false" />
+                        <Label fx:id="edit1_label" layoutX="117.0" layoutY="402.0" styleClass="white-text" stylesheets="@loginDesign.css" text="Admin Login" textFill="WHITE">
+                            <font>
+                                <Font name="Tahoma" size="25.0" />
+                            </font>
+                        </Label>
+                        <Label fx:id="editable4" layoutX="110.0" layoutY="256.0" text="Administrator" textFill="WHITE">
+                            <font>
+                                <Font size="25.0" />
+                            </font>
+                        </Label>
+                  <FontAwesomeIconView fx:id="usericcon" glyphName="USER" layoutX="120.0" layoutY="233.0" size="15em" visible="false" />
+                  <Label fx:id="editable3" layoutX="146.0" layoutY="256.0" text="Trainer" textFill="WHITE" visible="false">
+                     <font>
+                        <Font size="25.0" />
+                     </font>
+                  </Label>
+                    </children>
+                </AnchorPane>
+                <AnchorPane prefHeight="45.0" prefWidth="700.0">
+                    <children>
+                        <Button fx:id="close" mnemonicParsing="false" onAction="#close" prefHeight="24.0" prefWidth="47.0" styleClass="close" stylesheets="@loginDesign.css" AnchorPane.rightAnchor="2.0" AnchorPane.topAnchor="2.0">
+                            <graphic>
+                                <FontAwesomeIconView fx:id="close_Icon" glyphName="CLOSE" />
+                            </graphic>
+                        </Button>
+                    </children>
+                </AnchorPane>
+            </children>
+        </AnchorPane>
+    </children>
+</StackPane>
