@@ -8,10 +8,14 @@ import javafx.fxml.FXML;
 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.io.IOException;
@@ -106,6 +110,14 @@ public class MainController implements Initializable {
                     alert.setHeaderText(null);
                     alert.setContentText("Login Successful");
                     alert.showAndWait();
+
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("client.fxml"));
+                    Parent root = loader.load();
+
+                    Stage stage = (Stage) client_loginBtn.getScene().getWindow();
+                    stage.setScene(new Scene(root));
+                    stage.show();
+
                 } else {
                     alert = new Alert(Alert.AlertType.ERROR);
                     alert.setTitle("Error");
@@ -142,7 +154,7 @@ public class MainController implements Initializable {
                     alert = new Alert(Alert.AlertType.ERROR);
                     alert.setTitle("Error");
                     alert.setHeaderText(null);
-                    alert.setContentText("Password length must be less then 8");
+                    alert.setContentText("Password length must be at least 8");
                     alert.showAndWait();
                 } else {
                     prepare = connect.prepareStatement(sql);

@@ -1,6 +1,5 @@
 package edu.metrostate.fitnessmanagementsystem;
 
-import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -152,8 +151,6 @@ public class AdminController implements Initializable {
 
         try {
 
-
-
             Alert alert;
 
             if(trainer_Id.getText().isEmpty() || trainer_name.getText().isEmpty() || username_trainer.getText().isEmpty() ||
@@ -194,6 +191,7 @@ public class AdminController implements Initializable {
                     alert.showAndWait();
 
                     prepare.executeUpdate();
+                    trainersClearBtn();
 
                     trainersShowData();
                 }
@@ -217,11 +215,127 @@ public class AdminController implements Initializable {
 
     }
 
-   /*public void trainserDeleteBtn {
+    public void trainersUpdateBtn() {
 
-        String sql = "DELETE FROM trainers WHERE trainer_Id = '"
+        String sql = "UPDATE trainers SET name = '"
+                + trainer_name.getText() + "', username = '"
+                + username_trainer.getText() + "', password = '"
+                + password_trainer.getText() + "', address = '"
+                + trainer_address.getText() + "', gender = '"
+                + trainer_gender.getSelectionModel().getSelectedItem() + "', phoneNum = '"
+                + trainer_phoneNum.getText() + "', status = '"
+                + trainer_status.getSelectionModel().getSelectedItem() + "' WHERE trainerId = '"
+                +trainer_Id.getText() + "'";
+
+        connect = Database.connectDB();
+
+        try {
+            Alert alert;
+
+            if(trainer_Id.getText().isEmpty() || trainer_name.getText().isEmpty() || username_trainer.getText().isEmpty() ||
+                    password_trainer.getText().isEmpty() || trainer_address.getText().isEmpty()
+                    || trainer_gender.getSelectionModel().getSelectedItem() == null
+                    || trainer_phoneNum.getText().isEmpty()
+                    || trainer_status.getSelectionModel().getSelectedItem() == null) {
+                emptyFields();
+            } else {
+
+                alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setTitle("Confirmation Message");
+                alert.setHeaderText(null);
+                alert.setContentText("Are you sure you want to Update Trainer ID: " + trainer_Id.getText() + " ? ");
+                Optional<ButtonType> result = alert.showAndWait();
+
+                if(result.get().equals(ButtonType.OK)) {
+
+                    prepare = connect.prepareStatement(sql);
+                    prepare.executeUpdate();
+
+                    alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Information Message");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Successfully Updated!");
+                    alert.showAndWait();
+
+                    trainersClearBtn();
+
+                    trainersShowData();
+
+                } else {
+
+                    alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Information Message");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Canceled Updated!");
+                    alert.showAndWait();
+
+                }
+
+            }
+
+
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+   public void trainerDeleteBtn() {
+
+        String sql = "DELETE FROM trainers WHERE trainerId = '"
                 + trainer_Id.getText() + "'";
-    }*/
+
+       connect = Database.connectDB();
+
+       try {
+           Alert alert;
+
+           if(trainer_Id.getText().isEmpty() || trainer_name.getText().isEmpty() || username_trainer.getText().isEmpty() ||
+                   password_trainer.getText().isEmpty() || trainer_address.getText().isEmpty()
+                   || trainer_gender.getSelectionModel().getSelectedItem() == null
+                   || trainer_phoneNum.getText().isEmpty()
+                   || trainer_status.getSelectionModel().getSelectedItem() == null) {
+               emptyFields();
+           } else {
+
+               alert = new Alert(Alert.AlertType.CONFIRMATION);
+               alert.setTitle("Confirmation Message");
+               alert.setHeaderText(null);
+               alert.setContentText("Are you sure you want to Delete Trainer ID: " + trainer_Id.getText() + " ? ");
+               Optional<ButtonType> result = alert.showAndWait();
+
+               if(result.get().equals(ButtonType.OK)) {
+
+                   prepare = connect.prepareStatement(sql);
+                   prepare.executeUpdate();
+
+                   alert = new Alert(Alert.AlertType.INFORMATION);
+                   alert.setTitle("Information Message");
+                   alert.setHeaderText(null);
+                   alert.setContentText("Successfully Deleted!");
+                   alert.showAndWait();
+
+                   trainersClearBtn();
+
+                   trainersShowData();
+
+               } else {
+
+                   alert = new Alert(Alert.AlertType.ERROR);
+                   alert.setTitle("Information Message");
+                   alert.setHeaderText(null);
+                   alert.setContentText("Canceled Deletion!");
+                   alert.showAndWait();
+
+               }
+
+           }
+
+
+       } catch(Exception e) {
+           e.printStackTrace();
+       }
+    }
 
     public ObservableList<TrainerData> trainersDataList() {
 
@@ -282,11 +396,12 @@ public class AdminController implements Initializable {
         if((num -1) < -1) return;
 
         trainer_Id.setText(td.getTrainerId());
-        trainer_name.setText(td.getTrainerId());
-        username_trainer.setText(td.getTrainerId());
-        password_trainer.setText(td.getTrainerId());
-        trainer_address.setText(td.getTrainerId());
-        trainer_phoneNum.setText(td.getTrainerId());
+        trainer_name.setText(td.getName());
+        username_trainer.setText(td.getUsername());
+        password_trainer.setText(td.getPassword());
+        trainer_address.setText(td.getAddress());
+        trainer_phoneNum.setText(String.valueOf(td.getPhoneNum()));
+
 
     }
 

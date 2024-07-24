@@ -157,6 +157,13 @@ public class AdTrLoginController implements Initializable {
                     alert.setHeaderText(null);
                     alert.setContentText("Login Successful");
                     alert.showAndWait();
+
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("trainer.fxml"));
+                    Parent root = loader.load();
+
+                    Stage stage = (Stage) trainer_loginBtn.getScene().getWindow();
+                    stage.setScene(new Scene(root));
+                    stage.show();
                 } else {
                     alert = new Alert(Alert.AlertType.ERROR);
                     alert.setTitle("Error");
@@ -224,6 +231,6 @@ public class AdTrLoginController implements Initializable {
 
     public void switchScene() throws IOException {
         MainApplication m = new MainApplication();
-        m.changeScene("hello-view.fxml");
+        m.changeScene("main-login.fxml");
     }
 }

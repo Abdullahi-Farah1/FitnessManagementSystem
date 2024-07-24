@@ -22,7 +22,7 @@ public class MainApplication extends Application {
 
         stg = stage;
         stage.setResizable(false);
-        Parent root = FXMLLoader.load(getClass().getResource("hello-view.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("main-login.fxml"));
 
         Scene scene = new Scene(root);
 
