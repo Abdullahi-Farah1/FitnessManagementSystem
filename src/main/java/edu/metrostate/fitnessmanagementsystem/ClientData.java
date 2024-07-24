@@ -11,6 +11,8 @@ public class ClientData {
     private Integer phoneNum;
     private String status;
 
+    private String trainerId;
+
     public ClientData(Integer id, String clientId, String name, String username, String password, String address, String gender, Integer phoneNum, String status) {
         this.id = id;
         this.clientId = clientId;
@@ -58,5 +60,9 @@ public class ClientData {
 
     public String getStatus() {
         return status;
+    }
+
+    public String getTrainerId() {
+        return trainerId;
     }
 }

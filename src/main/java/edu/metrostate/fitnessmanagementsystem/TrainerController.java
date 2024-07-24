@@ -5,6 +5,7 @@ import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -68,6 +69,28 @@ public class TrainerController implements Initializable {
     private PreparedStatement prepare;
     private ResultSet result;
     private Statement statement;
+
+    @FXML
+    private void sendFitnessPlan(ActionEvent event) {
+        ClientData selectedClient = trainerClient_tableview.getSelectionModel().getSelectedItem();
+        String fitnessPlan = fitness_plan.getText();
+
+        if (selectedClient != null && !fitnessPlan.isEmpty()) {
+            String sql = "INSERT INTO fitnessplan(clientId, plan) VALUES(?, ?)";
+            connect = Database.connectDB();
+            try (
+                 PreparedStatement pstmt = connect.prepareStatement(sql)) {
+                pstmt.setString(1, selectedClient.getClientId());
+                pstmt.setString(2, fitnessPlan);
+                pstmt.executeUpdate();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            fitness_plan.clear(); // Clear the text area after sending
+        } else {
+            // Handle the case where no client is selected or the fitness plan is empty
+        }
+    }
 
     public ObservableList<ClientData> clientDataList() {
 

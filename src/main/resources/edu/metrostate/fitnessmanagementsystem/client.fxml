@@ -144,7 +144,7 @@
                               </AnchorPane>
                            </children>
                         </AnchorPane>
-                        <AnchorPane fx:id="clientTrainer_Form" layoutX="39.0" layoutY="36.0" prefHeight="397.0" prefWidth="900.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <AnchorPane fx:id="clientTrainer_Form" layoutX="39.0" layoutY="36.0" prefHeight="397.0" prefWidth="900.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <children>
                               <AnchorPane layoutX="18.0" layoutY="14.0" prefHeight="361.0" prefWidth="865.0" stylesheets="@trainerDesign.css">
                                  <styleClass>
@@ -175,7 +175,7 @@
                               </AnchorPane>
                            </children>
                         </AnchorPane>
-                        <AnchorPane fx:id="clientfitness_Form" layoutX="136.0" layoutY="57.0" prefHeight="397.0" prefWidth="900.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <AnchorPane fx:id="clientfitness_Form" layoutX="136.0" layoutY="57.0" prefHeight="397.0" prefWidth="900.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <children>
                               <AnchorPane layoutX="48.0" layoutY="25.0" prefHeight="330.0" prefWidth="805.0" stylesheets="@trainerDesign.css">
                                  <styleClass>

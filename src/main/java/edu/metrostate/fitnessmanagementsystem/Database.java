@@ -1,7 +1,12 @@
 package edu.metrostate.fitnessmanagementsystem;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 public class Database {
     public static Connection connectDB() {
@@ -17,5 +22,10 @@ public class Database {
             e.printStackTrace();
         }
         return null;
+
     }
+
+
+
+
 }

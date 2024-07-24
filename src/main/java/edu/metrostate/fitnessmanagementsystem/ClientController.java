@@ -68,10 +68,9 @@ public class ClientController implements Initializable {
     private AnchorPane clientfitness_Form;
 
     @FXML
-    private TableColumn<?, ?> fitnessPlan_col;
-
+    private TableView<FitnessPlanData> fitnessPlan_table;
     @FXML
-    private TableView<?> fitnessPlan_table;
+    private TableColumn<FitnessPlanData, String> fitnessPlan_col;
 
     @FXML
     private Button fitnessPlan_dash;
@@ -114,6 +113,8 @@ public class ClientController implements Initializable {
     private ResultSet result;
     private Statement statement;
 
+
+
     public void emptyFields() {
         Alert alert;
         alert = new Alert(Alert.AlertType.ERROR);
@@ -121,6 +122,48 @@ public class ClientController implements Initializable {
         alert.setHeaderText(null);
         alert.setContentText("Please do not leave the fields blank.");
         alert.showAndWait();
+    }
+
+    public ObservableList<FitnessPlanData> fitnessPlanDataList() {
+
+        ObservableList<FitnessPlanData> listData = FXCollections.observableArrayList();
+
+        String sql = "SELECT * FROM fitnessplan";
+
+        connect = Database.connectDB();
+
+
+        try {
+
+            prepare = connect.prepareStatement(sql);
+            result = prepare.executeQuery();
+
+            FitnessPlanData fd;
+
+            while (result.next()) {
+                fd = new FitnessPlanData(result.getInt("id"),result.getString("clientId"),result.getString("plan"));
+
+                listData.add(fd);
+            }
+
+
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return listData;
+    }
+
+    private ObservableList<FitnessPlanData> fitnessPlanListData;
+
+    public void trainShowData() {
+
+        fitnessPlanListData = fitnessPlanDataList();
+
+        fitnessPlan_col.setCellValueFactory(new PropertyValueFactory<>("plan"));
+
+        fitnessPlan_table.setItems(fitnessPlanListData);
+
     }
 
     public void clientSubmitBtn() {
@@ -342,5 +385,6 @@ public class ClientController implements Initializable {
         trainersShowData();
         clientStatusList();
         clientGenderList();
+        trainShowData();
     }
 }
