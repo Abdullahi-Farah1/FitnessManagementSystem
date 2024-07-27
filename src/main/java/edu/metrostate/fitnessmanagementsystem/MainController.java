@@ -85,13 +85,10 @@ public class MainController implements Initializable {
     private ResultSet result;
 
     public void login() {
-
-        String sql = "select * from client where username = ? and password = ?";
-
+        String sql = "SELECT * FROM client WHERE username = ? AND password = ?";
         connect = Database.connectDB();
 
         try {
-
             prepare = connect.prepareStatement(sql);
             prepare.setString(1, client_username.getText());
             prepare.setString(2, client_password.getText());
@@ -103,7 +100,7 @@ public class MainController implements Initializable {
                 alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Error");
                 alert.setHeaderText(null);
-                alert.setContentText("Please Do not leave the fields blank.");
+                alert.setContentText("Please do not leave the fields blank.");
                 alert.showAndWait();
             } else {
                 if (result.next()) {
@@ -113,28 +110,26 @@ public class MainController implements Initializable {
                     alert.setContentText("Login Successful");
                     alert.showAndWait();
 
+                    // Store client ID in session
+                    UserSession.getInstance().setClientId(result.getString("clientId"));
+
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("client.fxml"));
                     Parent root = loader.load();
 
                     Stage stage = (Stage) client_loginBtn.getScene().getWindow();
                     stage.setScene(new Scene(root));
                     stage.show();
-
                 } else {
                     alert = new Alert(Alert.AlertType.ERROR);
                     alert.setTitle("Error");
                     alert.setHeaderText(null);
                     alert.setContentText("Wrong Username or Password");
                     alert.showAndWait();
-
                 }
             }
-
-
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
     public void signup() {

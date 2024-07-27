@@ -137,7 +137,6 @@ public class AdTrLoginController implements Initializable {
 
     public void trainerLogin() {
         String sql = "SELECT * FROM trainers WHERE username = ? AND password = ?";
-
         connect = Database.connectDB();
 
         try {
@@ -162,6 +161,9 @@ public class AdTrLoginController implements Initializable {
                     alert.setContentText("Login Successful");
                     alert.showAndWait();
 
+                    // Store trainer ID in session
+                    UserSession.getInstance().setTrainerId(result.getString("trainerId"));
+
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("trainer.fxml"));
                     Parent root = loader.load();
 
@@ -180,6 +182,7 @@ public class AdTrLoginController implements Initializable {
             e.printStackTrace();
         }
     }
+
 
     public void adminSlider() {
         TranslateTransition slider1 = new TranslateTransition();

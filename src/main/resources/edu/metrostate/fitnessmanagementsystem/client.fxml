@@ -152,7 +152,7 @@
                                     <String fx:value="shadow" />
                                  </styleClass>
                                  <children>
-                                    <Button fx:id="clientAdd_trainer" layoutX="747.0" layoutY="130.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="104.0" stylesheets="@adminDesign.css" text="Add">
+                                    <Button fx:id="clientAdd_trainer" layoutX="747.0" layoutY="130.0" mnemonicParsing="false" onAction="#addTrainerToClient" prefHeight="50.0" prefWidth="104.0" stylesheets="@adminDesign.css" text="Add">
                                        <font>
                                           <Font name="Arial" size="15.0" />
                                        </font>

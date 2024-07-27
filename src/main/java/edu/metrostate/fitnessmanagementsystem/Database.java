@@ -25,6 +25,56 @@ public class Database {
 
     }
 
+    public ObservableList<TrainerData> getAllTrainers() {
+        ObservableList<TrainerData> listData = FXCollections.observableArrayList();
+        String sql = "SELECT * FROM trainers";
+        try (Connection connect = connectDB();
+             PreparedStatement prepare = connect.prepareStatement(sql);
+             ResultSet result = prepare.executeQuery()) {
+
+            while (result.next()) {
+                TrainerData trainer = new TrainerData(result.getInt("id"),
+                        result.getString("trainerId"),
+                        result.getString("name"),
+                        result.getString("username"),
+                        result.getString("password"),
+                        result.getString("address"),
+                        result.getString("gender"),
+                        result.getInt("phoneNum"),
+                        result.getString("status"));
+                listData.add(trainer);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return listData;
+    }
+
+    public ObservableList<ClientData> getClientsByTrainerId(String trainerId) {
+        ObservableList<ClientData> clients = FXCollections.observableArrayList();
+        String sql = "SELECT * FROM client WHERE trainerId = ?";
+        try (Connection connect = connectDB();
+             PreparedStatement pstmt = connect.prepareStatement(sql)) {
+            pstmt.setString(1, trainerId);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                ClientData client = new ClientData(rs.getInt("id"),
+                        rs.getString("clientId"),
+                        rs.getString("name"),
+                        rs.getString("username"),
+                        rs.getString("password"),
+                        rs.getString("address"),
+                        rs.getString("gender"),
+                        rs.getInt("phoneNum"),
+                        rs.getString("status"));
+                clients.add(client);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return clients;
+    }
+
 
 
 
