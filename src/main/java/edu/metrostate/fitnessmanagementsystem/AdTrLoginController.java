@@ -161,9 +161,6 @@ public class AdTrLoginController implements Initializable {
                     alert.setContentText("Login Successful");
                     alert.showAndWait();
 
-                    // Store trainer ID in session
-                    UserSession.getInstance().setTrainerId(result.getString("trainerId"));
-
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("trainer.fxml"));
                     Parent root = loader.load();
 

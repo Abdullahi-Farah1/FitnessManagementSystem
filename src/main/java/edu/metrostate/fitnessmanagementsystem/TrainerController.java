@@ -207,25 +207,12 @@ public class TrainerController implements Initializable {
         Platform.exit();
     }
 
-    public void clientShowData(String trainerId) {
-        ObservableList<ClientData> clientListData = database.getClientsByTrainerId(trainerId);
 
-        client_col_clientID.setCellValueFactory(new PropertyValueFactory<>("clientId"));
-        client_col_clientName.setCellValueFactory(new PropertyValueFactory<>("name"));
-        client_col_clientUsername.setCellValueFactory(new PropertyValueFactory<>("username"));
-        client_col_clientAddress.setCellValueFactory(new PropertyValueFactory<>("address"));
-        client_col_clientGender.setCellValueFactory(new PropertyValueFactory<>("gender"));
-        client_col_clientPhoneNum.setCellValueFactory(new PropertyValueFactory<>("phoneNum"));
-        client_col_clientStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
-
-        trainerClient_tableview.setItems(clientListData);
-    }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        String trainerId = UserSession.getInstance().getTrainerId();
-        if (trainerId != null) {
-            clientShowData(trainerId);
-        }
+
+            clientShowData();
+
     }
 }

@@ -108,8 +108,6 @@ public class ClientController implements Initializable {
     @FXML
     private Button logout_btn;
 
-    private Database database = new Database();
-
     private Connection connect;
     private PreparedStatement prepare;
     private ResultSet result;
@@ -279,30 +277,6 @@ public class ClientController implements Initializable {
 
     }
 
-    public void addTrainerToClient(ActionEvent event) {
-        TrainerData selectedTrainer = trainer_tableView.getSelectionModel().getSelectedItem();
-
-        // Fetch the current client's ID from the session or context
-        String currentClientId = UserSession.getInstance().getClientId();
-
-        System.out.println("Selected Trainer: " + selectedTrainer); // Debugging line
-        System.out.println("Current Client ID: " + currentClientId); // Debugging line
-
-        if (selectedTrainer != null && currentClientId != null && !currentClientId.isEmpty()) {
-            String sql = "UPDATE client SET trainerId = ? WHERE clientId = ?";
-            Connection connect = database.connectDB();
-            try (PreparedStatement pstmt = connect.prepareStatement(sql)) {
-                pstmt.setString(1, selectedTrainer.getTrainerId());
-                pstmt.setString(2, currentClientId);
-                pstmt.executeUpdate();
-                System.out.println("Trainer assigned successfully."); // Debugging line
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        } else {
-            System.out.println("No trainer selected or client ID is empty."); // Debugging line
-        }
-    }
 
     private String gender[] = {"Male", "Female", "Other"};
 

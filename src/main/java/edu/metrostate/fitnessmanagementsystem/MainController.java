@@ -110,8 +110,7 @@ public class MainController implements Initializable {
                     alert.setContentText("Login Successful");
                     alert.showAndWait();
 
-                    // Store client ID in session
-                    UserSession.getInstance().setClientId(result.getString("clientId"));
+
 
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("client.fxml"));
                     Parent root = loader.load();

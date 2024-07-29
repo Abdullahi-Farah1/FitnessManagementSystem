@@ -3,79 +3,80 @@ package edu.metrostate.fitnessmanagementsystem;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.sql.*;
 
 public class Database {
-    public static Connection connectDB() {
 
+    static {
         try {
-            Class.forName("com.mysql.jdbc.Driver");
-
-            Connection connect;
-            connect = DriverManager.getConnection("jdbc:mysql://localhost:3306/fitness","root","");
-            return connect;
-
+            Connection connection = connectDB();
+            if (connection != null) {
+                initializeDatabase(connection);
+                connection.close(); // Close the connection after initialization
+            }
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(); // Consider using a logger instead
+        }
+    }
+
+    public static Connection connectDB() {
+        try {
+            Connection connect = DriverManager.getConnection("jdbc:mysql://localhost:3306/fitness", "root", "");
+            return connect;
+        } catch (SQLException e) {
+            e.printStackTrace(); // Consider using a logger instead
         }
         return null;
-
     }
 
-    public ObservableList<TrainerData> getAllTrainers() {
-        ObservableList<TrainerData> listData = FXCollections.observableArrayList();
-        String sql = "SELECT * FROM trainers";
-        try (Connection connect = connectDB();
-             PreparedStatement prepare = connect.prepareStatement(sql);
-             ResultSet result = prepare.executeQuery()) {
+    private static void initializeDatabase(Connection connection) {
+        String createAdminsTable = "CREATE TABLE IF NOT EXISTS admin (" +
+                "id INT AUTO_INCREMENT PRIMARY KEY, " +
+                "username VARCHAR(50) NOT NULL, " +
+                "password VARCHAR(50) NOT NULL" +
+                ");";
 
-            while (result.next()) {
-                TrainerData trainer = new TrainerData(result.getInt("id"),
-                        result.getString("trainerId"),
-                        result.getString("name"),
-                        result.getString("username"),
-                        result.getString("password"),
-                        result.getString("address"),
-                        result.getString("gender"),
-                        result.getInt("phoneNum"),
-                        result.getString("status"));
-                listData.add(trainer);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        String createTrainersTable = "CREATE TABLE IF NOT EXISTS trainers (" +
+                "id INT AUTO_INCREMENT PRIMARY KEY, " +
+                "trainerId VARCHAR(50) NOT NULL UNIQUE, " +
+                "name VARCHAR(100), " +
+                "username VARCHAR(50), " +
+                "password VARCHAR(50), " +
+                "address VARCHAR(200), " +
+                "gender VARCHAR(10), " +
+                "phoneNum INT DEFAULT 0, " +
+                "status VARCHAR(20) DEFAULT ''" +
+                ");";
+
+        String createClientsTable = "CREATE TABLE IF NOT EXISTS client (" +
+                "id INT AUTO_INCREMENT PRIMARY KEY, " +
+                "clientId VARCHAR(50) NULL UNIQUE DEFAULT 'default', " +
+                "email VARCHAR(100) DEFAULT '', " +
+                "name VARCHAR(100) DEFAULT '', " +
+                "username VARCHAR(50) DEFAULT '', " +
+                "password VARCHAR(50) DEFAULT '', " +
+                "address VARCHAR(200) DEFAULT '', " +
+                "gender VARCHAR(10) DEFAULT '', " +
+                "phoneNum INT DEFAULT 0, " +
+                "status VARCHAR(20) DEFAULT '', " +
+                "trainerId INT DEFAULT NULL, " +
+                "FOREIGN KEY (trainerId) REFERENCES trainers(id) ON DELETE SET NULL ON UPDATE CASCADE" +
+                ");";
+
+        String createFitnessPlanTable = "CREATE TABLE IF NOT EXISTS fitnessplan (" +
+                "id INT AUTO_INCREMENT PRIMARY KEY, " +
+                "clientId VARCHAR(50) NOT NULL, " +
+                "plan TEXT, " +
+                "FOREIGN KEY (clientId) REFERENCES client(clientId) ON DELETE CASCADE ON UPDATE CASCADE" +
+                ");";
+
+        try (Statement stmt = connection.createStatement()) {
+            stmt.execute(createAdminsTable);
+            stmt.execute(createTrainersTable);
+            stmt.execute(createClientsTable);
+            stmt.execute(createFitnessPlanTable);
+        } catch (SQLException e) {
+            e.printStackTrace(); // Consider using a logger instead
         }
-        return listData;
     }
-
-    public ObservableList<ClientData> getClientsByTrainerId(String trainerId) {
-        ObservableList<ClientData> clients = FXCollections.observableArrayList();
-        String sql = "SELECT * FROM client WHERE trainerId = ?";
-        try (Connection connect = connectDB();
-             PreparedStatement pstmt = connect.prepareStatement(sql)) {
-            pstmt.setString(1, trainerId);
-            ResultSet rs = pstmt.executeQuery();
-            while (rs.next()) {
-                ClientData client = new ClientData(rs.getInt("id"),
-                        rs.getString("clientId"),
-                        rs.getString("name"),
-                        rs.getString("username"),
-                        rs.getString("password"),
-                        rs.getString("address"),
-                        rs.getString("gender"),
-                        rs.getInt("phoneNum"),
-                        rs.getString("status"));
-                clients.add(client);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return clients;
-    }
-
-
-
-
 }
