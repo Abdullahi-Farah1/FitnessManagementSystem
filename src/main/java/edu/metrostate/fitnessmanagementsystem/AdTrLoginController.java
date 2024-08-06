@@ -155,15 +155,30 @@ public class AdTrLoginController implements Initializable {
                 alert.showAndWait();
             } else {
                 if (result.next()) {
+                    TrainerData loggedInTrainer = new TrainerData(
+                            result.getInt("id"),
+                            result.getString("trainerId"),
+                            result.getString("name"),
+                            result.getString("username"),
+                            result.getString("password"),
+                            result.getString("address"),
+                            result.getString("gender"),
+                            result.getInt("phoneNum"),
+                            result.getString("status")
+                    );
+
+                    SessionManager.setCurrentTrainer(loggedInTrainer);
+
                     alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setTitle("Success");
                     alert.setHeaderText(null);
                     alert.setContentText("Login Successful");
                     alert.showAndWait();
 
+                    SessionManager.username = trainer_username.getText();
+
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("trainer.fxml"));
                     Parent root = loader.load();
-
                     Stage stage = (Stage) trainer_loginBtn.getScene().getWindow();
                     stage.setScene(new Scene(root));
                     stage.show();
@@ -179,6 +194,7 @@ public class AdTrLoginController implements Initializable {
             e.printStackTrace();
         }
     }
+
 
 
     public void adminSlider() {

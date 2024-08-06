@@ -170,7 +170,7 @@
                               <Separator layoutX="17.0" layoutY="174.0" prefHeight="11.0" prefWidth="846.0" />
                            </children>
                         </AnchorPane>
-                        <AnchorPane fx:id="trainer_form" layoutX="318.0" layoutY="159.0" prefHeight="555.0" prefWidth="881.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <AnchorPane fx:id="trainer_form" layoutX="318.0" layoutY="159.0" prefHeight="555.0" prefWidth="881.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <children>
                               <AnchorPane layoutX="14.0" layoutY="16.0" prefHeight="523.0" prefWidth="283.0" stylesheets="@adminDesign.css">
                                  <styleClass>
@@ -282,7 +282,7 @@
                               <Separator layoutX="308.0" layoutY="20.0" orientation="VERTICAL" prefHeight="517.0" prefWidth="2.0" />
                            </children>
                         </AnchorPane>
-                        <AnchorPane fx:id="client_form" layoutX="177.0" layoutY="145.0" prefHeight="555.0" prefWidth="881.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <AnchorPane fx:id="client_form" layoutX="177.0" layoutY="145.0" prefHeight="555.0" prefWidth="881.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <children>
                               <AnchorPane layoutX="33.0" layoutY="127.0" prefHeight="414.0" prefWidth="787.0" stylesheets="@adminDesign.css">
                                  <styleClass>
@@ -292,33 +292,24 @@
                                  <children>
                                     <TableView fx:id="client_tableView" layoutX="24.0" layoutY="11.0" prefHeight="393.0" prefWidth="740.0">
                                       <columns>
-                                        <TableColumn prefWidth="103.0" text="Client ID" />
-                                        <TableColumn prefWidth="88.0" text="Name" />
-                                          <TableColumn prefWidth="100.0" text="Username" />
-                                          <TableColumn prefWidth="109.0" text="Address" />
-                                          <TableColumn prefWidth="108.0" text="Gender" />
-                                          <TableColumn prefWidth="138.0" text="Phone Number" />
-                                          <TableColumn prefWidth="92.0" text="Status" />
+                                        <TableColumn fx:id="cientCol_Id" prefWidth="103.0" text="Client ID" />
+                                        <TableColumn fx:id="cientCol_name" prefWidth="88.0" text="Name" />
+                                          <TableColumn fx:id="cientCol_username" prefWidth="100.0" text="Username" />
+                                          <TableColumn fx:id="cientCol_address" prefWidth="109.0" text="Address" />
+                                          <TableColumn fx:id="cientCol_gender" prefWidth="108.0" text="Gender" />
+                                          <TableColumn fx:id="cientCol_phoneNum" prefWidth="138.0" text="Phone Number" />
+                                          <TableColumn fx:id="cientCol_status" prefWidth="92.0" text="Status" />
                                       </columns>
                                     </TableView>
                                  </children>
                               </AnchorPane>
-                              <AnchorPane layoutX="261.0" layoutY="14.0" prefHeight="77.0" prefWidth="275.0" stylesheets="@adminDesign.css">
+                              <AnchorPane layoutX="347.0" layoutY="14.0" prefHeight="77.0" prefWidth="160.0" stylesheets="@adminDesign.css">
                                  <styleClass>
                                     <String fx:value="white-bg" />
                                     <String fx:value="shadow" />
                                  </styleClass>
                                  <children>
-                                    <Button fx:id="client_addBtn" layoutX="34.0" layoutY="14.0" mnemonicParsing="false" prefHeight="49.0" prefWidth="95.0" stylesheets="@adminDesign.css" text="Delete">
-                                       <styleClass>
-                                          <String fx:value="btn" />
-                                          <String fx:value="shadow" />
-                                       </styleClass>
-                                       <font>
-                                          <Font size="15.0" />
-                                       </font>
-                                    </Button>
-                                    <Button fx:id="client_updateBtn" layoutX="146.0" layoutY="14.0" mnemonicParsing="false" prefHeight="49.0" prefWidth="95.0" stylesheets="@adminDesign.css" text="Update">
+                                    <Button fx:id="client_addBtn" layoutX="33.0" layoutY="14.0" mnemonicParsing="false" onAction="#clientDelete" prefHeight="49.0" prefWidth="95.0" stylesheets="@adminDesign.css" text="Delete">
                                        <styleClass>
                                           <String fx:value="btn" />
                                           <String fx:value="shadow" />

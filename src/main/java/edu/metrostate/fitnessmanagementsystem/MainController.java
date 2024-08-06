@@ -80,6 +80,9 @@ public class MainController implements Initializable {
     @FXML
     private Button sub_signupBtn;
 
+    @FXML
+    private TextField su_Id;
+
     private Connection connect;
     private PreparedStatement prepare;
     private ResultSet result;
@@ -104,17 +107,30 @@ public class MainController implements Initializable {
                 alert.showAndWait();
             } else {
                 if (result.next()) {
+                    ClientData loggedInClient = new ClientData(
+                            result.getInt("id"),
+                            result.getString("clientId"),
+                            result.getString("name"),
+                            result.getString("username"),
+                            result.getString("password"),
+                            result.getString("address"),
+                            result.getString("gender"),
+                            result.getInt("phoneNum"),
+                            result.getString("status"),
+                            result.getString("status")
+                    );
+
+                    SessionManager.username = client_username.getText();
+                    SessionManager.setCurrentClient(loggedInClient);
+
                     alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setTitle("Success");
                     alert.setHeaderText(null);
                     alert.setContentText("Login Successful");
                     alert.showAndWait();
 
-
-
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("client.fxml"));
                     Parent root = loader.load();
-
                     Stage stage = (Stage) client_loginBtn.getScene().getWindow();
                     stage.setScene(new Scene(root));
                     stage.show();
@@ -131,32 +147,29 @@ public class MainController implements Initializable {
         }
     }
 
+
+
     public void signup() {
-        String sql = "INSERT INTO client (email, username, password) VALUES(?,?,?)";
+        String sql = "INSERT INTO client (clientId, email, username, password) VALUES(?,?,?,?)";
 
         connect = Database.connectDB();
 
         try {
             Alert alert;
 
-            if(su_email.getText().isEmpty() || su_username.getText().isEmpty() || su_password.getText().isEmpty()) {
+            if(su_Id.getText().isEmpty() || su_email.getText().isEmpty() || su_username.getText().isEmpty() || su_password.getText().isEmpty()) {
                 alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Error");
                 alert.setHeaderText(null);
                 alert.setContentText("Please do not leave the fields blank.");
                 alert.showAndWait();
             } else {
-                if(su_password.getText().length() < 8) {
-                    alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Error");
-                    alert.setHeaderText(null);
-                    alert.setContentText("Password length must be at least 8");
-                    alert.showAndWait();
-                } else {
                     prepare = connect.prepareStatement(sql);
-                    prepare.setString(1, su_email.getText());
-                    prepare.setString(2, su_username.getText());
-                    prepare.setString(3, su_password.getText());
+                    prepare.setString(1, su_Id.getText());
+                    prepare.setString(2, su_email.getText());
+                    prepare.setString(3, su_username.getText());
+                    prepare.setString(4, su_password.getText());
+
 
                     alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setTitle("Important Information");
@@ -166,12 +179,13 @@ public class MainController implements Initializable {
 
                     prepare.executeUpdate();
 
+                    su_Id.setText("");
                     su_email.setText("");
                     su_username.setText("");
                     su_password.setText("");
 
                 }
-            }
+
 
         } catch (Exception e) {
             e.printStackTrace();

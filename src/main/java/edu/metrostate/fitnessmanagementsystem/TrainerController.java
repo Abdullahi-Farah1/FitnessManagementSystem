@@ -64,6 +64,8 @@ public class TrainerController implements Initializable {
 
     @FXML
     private TableView<ClientData> trainerClient_tableview;
+    @FXML
+    private Label trainerUser;
 
     private Connection connect;
     private PreparedStatement prepare;
@@ -71,6 +73,14 @@ public class TrainerController implements Initializable {
     private Statement statement;
 
     private Database database = new Database();
+
+    public void displayUsername() {
+        String user = SessionManager.username;
+
+        user = user.substring(0,1).toUpperCase() + user.substring(1);
+
+        trainerUser.setText(user);
+    }
 
     @FXML
     private void sendFitnessPlan(ActionEvent event) {
@@ -115,7 +125,7 @@ public class TrainerController implements Initializable {
                         result.getString("username"),
                         result.getString("password"), result.getString("address"),
                         result.getString("gender"),result.getInt("phoneNum"),
-                        result.getString("status"));
+                        result.getString("status"), result.getString("trainerId"));
 
                 listData.add(cd);
             }
@@ -207,12 +217,27 @@ public class TrainerController implements Initializable {
         Platform.exit();
     }
 
+    public void showClientsForLoggedInTrainer() {
+        TrainerData currentTrainer = SessionManager.getCurrentTrainer();
+
+        if (currentTrainer != null) {
+            ObservableList<ClientData> filteredClients = FXCollections.observableArrayList();
+            for (ClientData client : clientListData) {
+                if (currentTrainer.getTrainerId().equals(client.getTrainerId())) {
+                    filteredClients.add(client);
+                }
+            }
+            trainerClient_tableview.setItems(filteredClients);
+        }
+    }
 
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
             clientShowData();
+            displayUsername();
+        showClientsForLoggedInTrainer();
 
     }
 }

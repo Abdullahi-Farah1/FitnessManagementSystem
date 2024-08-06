@@ -44,13 +44,13 @@ public class Database {
                 "password VARCHAR(50), " +
                 "address VARCHAR(200), " +
                 "gender VARCHAR(10), " +
-                "phoneNum INT DEFAULT 0, " +
+                "phoneNum BIGINT DEFAULT 0, " +
                 "status VARCHAR(20) DEFAULT ''" +
                 ");";
 
         String createClientsTable = "CREATE TABLE IF NOT EXISTS client (" +
                 "id INT AUTO_INCREMENT PRIMARY KEY, " +
-                "clientId VARCHAR(50) NULL UNIQUE DEFAULT 'default', " +
+                "clientId VARCHAR(50) NULL UNIQUE, " +
                 "email VARCHAR(100) DEFAULT '', " +
                 "name VARCHAR(100) DEFAULT '', " +
                 "username VARCHAR(50) DEFAULT '', " +
@@ -73,10 +73,32 @@ public class Database {
         try (Statement stmt = connection.createStatement()) {
             stmt.execute(createAdminsTable);
             stmt.execute(createTrainersTable);
+
+           /*String insertTrainerTemplate = "INSERT INTO trainers (trainerId, name, username, password, address, gender, phoneNum, status) " +
+                    "VALUES (%d, 'Trainer%d', 'trainer%d', 'password%d', 'Address%d', 'Male', %d, 'Active');";
+            String insertAdminTemplate = "INSERT INTO admin (username, password) " +
+                    "VALUES ('admin',12);";
+
+            for (int i = 1; i <= 20; i++) {
+                String insertTrainer = String.format(insertTrainerTemplate, i, i, i, i, i, i, 1234567890 + i);
+                stmt.execute(insertTrainer);
+            }
+
+            stmt.execute(insertAdminTemplate);*/
+
+            /*String insertClientTemplate = "INSERT INTO client (clientId, name, username, password, address, gender, phoneNum, status) " +
+                    "VALUES (%d, 'Client%d', 'Client%d', 'password%d', 'Address%d', 'Male', 80444%d, 'Active');";
+
+            for (int i = 1; i <= 20; i++) {
+                String insertTrainer = String.format(insertClientTemplate, i, i, i, i, i, i, 1234567890 + i);
+                stmt.execute(insertTrainer);
+            }*/
+
             stmt.execute(createClientsTable);
             stmt.execute(createFitnessPlanTable);
         } catch (SQLException e) {
-            e.printStackTrace(); // Consider using a logger instead
+            e.printStackTrace();
         }
     }
+
 }

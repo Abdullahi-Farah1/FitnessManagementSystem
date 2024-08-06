@@ -29,6 +29,27 @@ import java.util.ResourceBundle;
 public class AdminController implements Initializable {
 
     @FXML
+    private TableColumn<ClientData, String> cientCol_Id;
+
+    @FXML
+    private TableColumn<ClientData, String> cientCol_address;
+
+    @FXML
+    private TableColumn<ClientData, String> cientCol_gender;
+
+    @FXML
+    private TableColumn<ClientData, String> cientCol_name;
+
+    @FXML
+    private TableColumn<ClientData, Integer> cientCol_phoneNum;
+
+    @FXML
+    private TableColumn<ClientData, String> cientCol_status;
+
+    @FXML
+    private TableColumn<ClientData, String> cientCol_username;
+
+    @FXML
     private Button btn_clients;
 
     @FXML
@@ -41,7 +62,7 @@ public class AdminController implements Initializable {
     private AnchorPane client_form;
 
     @FXML
-    private TableView<?> client_tableView;
+    private TableView<ClientData> client_tableView;
 
     @FXML
     private Button client_updateBtn;
@@ -132,6 +153,59 @@ public class AdminController implements Initializable {
     private ResultSet result;
     private Statement statement;
 
+    public ObservableList<ClientData> clientDataList() {
+
+        ObservableList<ClientData> listData = FXCollections.observableArrayList();
+
+        String sql = "SELECT * FROM client";
+
+        connect = Database.connectDB();
+
+
+        try {
+
+            prepare = connect.prepareStatement(sql);
+            result = prepare.executeQuery();
+
+            ClientData cd;
+
+            while (result.next()) {
+                cd = new ClientData(result.getInt("id"), result.getString("clientId"),result.getString("name"),
+                        result.getString("username"),
+                        result.getString("password"), result.getString("address"),
+                        result.getString("gender"),result.getInt("phoneNum"),
+                        result.getString("status"), result.getString("trainerId"));
+
+                listData.add(cd);
+            }
+
+
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return listData;
+    }
+
+
+
+    private ObservableList<ClientData> clientListData;
+
+    public void clientShowData() {
+
+        clientListData = clientDataList();
+
+        cientCol_Id.setCellValueFactory(new PropertyValueFactory<>("clientId"));
+        cientCol_name.setCellValueFactory(new PropertyValueFactory<>("name"));
+        cientCol_username.setCellValueFactory(new PropertyValueFactory<>("username"));
+        cientCol_address.setCellValueFactory(new PropertyValueFactory<>("address"));
+        cientCol_gender.setCellValueFactory(new PropertyValueFactory<>("gender"));
+        cientCol_phoneNum.setCellValueFactory(new PropertyValueFactory<>("phoneNum"));
+        cientCol_status.setCellValueFactory(new PropertyValueFactory<>("status"));
+
+        client_tableView.setItems(clientListData);
+
+    }
 
     public void emptyFields() {
         Alert alert;
@@ -141,6 +215,38 @@ public class AdminController implements Initializable {
         alert.setContentText("Please do not leave the fields blank.");
         alert.showAndWait();
     }
+
+    public void clientDelete() {
+        ClientData selectedClient = client_tableView.getSelectionModel().getSelectedItem();
+
+        if (selectedClient != null) {
+            // Delete from the database
+            String sql = "DELETE FROM client WHERE clientId = ?";
+
+            connect = Database.connectDB();
+
+            try {
+                prepare = connect.prepareStatement(sql);
+                prepare.setString(1, selectedClient.getClientId());
+                prepare.executeUpdate();
+
+                // Remove from the ObservableList
+                clientListData.remove(selectedClient);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    if (prepare != null) prepare.close();
+                    if (connect != null) connect.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+
 
     public void trainersAddBtn() {
 
@@ -213,6 +319,7 @@ public class AdminController implements Initializable {
         trainer_phoneNum.setText("");
         trainer_status.getSelectionModel().clearSelection();
 
+
     }
 
     public void trainersUpdateBtn() {
@@ -257,9 +364,11 @@ public class AdminController implements Initializable {
                     alert.setContentText("Successfully Updated!");
                     alert.showAndWait();
 
+                    trainersShowData();
+
                     trainersClearBtn();
 
-                    trainersShowData();
+
 
                 } else {
 
@@ -315,9 +424,9 @@ public class AdminController implements Initializable {
                    alert.setContentText("Successfully Deleted!");
                    alert.showAndWait();
 
-                   trainersClearBtn();
-
                    trainersShowData();
+
+                   trainersClearBtn();
 
                } else {
 
@@ -446,6 +555,7 @@ public class AdminController implements Initializable {
 
             trainersGenderList();
             trainerStatusList();
+            trainersShowData();
 
         } else if (event.getSource() == btn_clients) {
             trainer_form.setVisible(false);
@@ -519,6 +629,7 @@ public class AdminController implements Initializable {
         trainersGenderList();
         trainerStatusList();
         trainersShowData();
+        clientShowData();
     }
 }
 
