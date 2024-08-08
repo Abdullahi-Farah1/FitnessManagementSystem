@@ -225,13 +225,42 @@ public class AdminController implements Initializable {
 
             connect = Database.connectDB();
 
-            try {
-                prepare = connect.prepareStatement(sql);
-                prepare.setString(1, selectedClient.getClientId());
-                prepare.executeUpdate();
+            try {  Alert alert;
 
-                // Remove from the ObservableList
-                clientListData.remove(selectedClient);
+                    alert = new Alert(Alert.AlertType.CONFIRMATION);
+                    alert.setTitle("Confirmation Message");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Are you sure you want to Delete Client ID: " + cientCol_Id.getText() + " ? ");
+                    Optional<ButtonType> result = alert.showAndWait();
+
+                    if(result.get().equals(ButtonType.OK)) {
+
+                        prepare = connect.prepareStatement(sql);
+                        prepare.setString(1, selectedClient.getClientId());
+                        prepare.executeUpdate();
+
+                        // Remove from the ObservableList
+                        clientListData.remove(selectedClient);
+
+                        alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setTitle("Information Message");
+                        alert.setHeaderText(null);
+                        alert.setContentText("Successfully Deleted!");
+                        alert.showAndWait();
+
+                        trainersShowData();
+
+                        trainersClearBtn();
+
+                    } else {
+
+                        alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setTitle("Information Message");
+                        alert.setHeaderText(null);
+                        alert.setContentText("Canceled Deletion!");
+                        alert.showAndWait();
+
+                    }
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -277,7 +306,7 @@ public class AdminController implements Initializable {
                     alert = new Alert(Alert.AlertType.ERROR);
                     alert.setTitle("Error");
                     alert.setHeaderText(null);
-                    alert.setContentText("Trainer ID: " + trainer_Id.getText() + "Is already taken!");
+                    alert.setContentText("Trainer ID: " + trainer_Id.getText() + " Is already taken!");
                     alert.showAndWait();
                 } else {
                     prepare = connect.prepareStatement(sql);

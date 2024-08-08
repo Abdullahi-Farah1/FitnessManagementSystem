@@ -170,46 +170,58 @@ public class ClientController implements Initializable {
     }
 
     public ObservableList<FitnessPlanData> fitnessPlanDataList() {
-
         ObservableList<FitnessPlanData> listData = FXCollections.observableArrayList();
+        ClientData currentClient = SessionManager.getCurrentClient();
 
-        String sql = "SELECT * FROM fitnessplan";
+        if (currentClient != null) {
+            String sql = "SELECT * FROM fitnessplan WHERE clientId = ?";
+            connect = Database.connectDB();
 
-        connect = Database.connectDB();
+            try {
+                prepare = connect.prepareStatement(sql);
+                prepare.setString(1, currentClient.getClientId());
+                result = prepare.executeQuery();
 
-
-        try {
-
-            prepare = connect.prepareStatement(sql);
-            result = prepare.executeQuery();
-
-            FitnessPlanData fd;
-
-            while (result.next()) {
-                fd = new FitnessPlanData(result.getInt("id"),result.getString("clientId"),result.getString("plan"));
-
-                listData.add(fd);
+                while (result.next()) {
+                    FitnessPlanData fd = new FitnessPlanData(result.getInt("id"), result.getString("clientId"), result.getString("plan"));
+                    listData.add(fd);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-
-
-        }catch (Exception e) {
-            e.printStackTrace();
         }
 
         return listData;
     }
 
+
     private ObservableList<FitnessPlanData> fitnessPlanListData;
 
     public void fitnessPlanShowData() {
+        // Retrieve the current client from the session
+        ClientData currentClient = SessionManager.getCurrentClient();
 
-        fitnessPlanListData = fitnessPlanDataList();
+        // Initialize the list to hold the fitness plans
+        ObservableList<FitnessPlanData> filteredPlans = FXCollections.observableArrayList();
 
-        fitnessPlan_col.setCellValueFactory(new PropertyValueFactory<>("plan"));
+        // Only proceed if a client is logged in
+        if (currentClient != null) {
+            // Get all fitness plans
+            fitnessPlanListData = fitnessPlanDataList();
 
-        fitnessPlan_table.setItems(fitnessPlanListData);
+            // Filter the plans to include only those belonging to the logged-in client
+            for (FitnessPlanData plan : fitnessPlanListData) {
+                if (currentClient.getClientId().equals(plan.getClientId())) {
+                    filteredPlans.add(plan);
+                }
+            }
 
+            // Set the filtered plans to the table view
+            fitnessPlan_col.setCellValueFactory(new PropertyValueFactory<>("plan"));
+            fitnessPlan_table.setItems(filteredPlans);
+        }
     }
+
 
     public void clientClearBtn() {
         client_Id.setText("");
@@ -228,66 +240,81 @@ public class ClientController implements Initializable {
 
         try (Connection connect = Database.connectDB()) {
             Alert alert;
+            String clientIdInput = client_Id.getText().trim();
+            String loggedInClientId = SessionManager.getCurrentClient().getClientId();
 
-            if (client_Id.getText().isEmpty() || client_name.getText().isEmpty() || username_client.getText().isEmpty() ||
+            // Ensure the loggedInClientId is the same as the clientIdInput
+            if (!clientIdInput.equals(loggedInClientId)) {
+                alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText(null);
+                alert.setContentText("Client Id belongs to another client!");
+                alert.showAndWait();
+                return;
+            }
+
+            // Check if any field is empty
+            if (clientIdInput.isEmpty() || client_name.getText().isEmpty() || username_client.getText().isEmpty() ||
                     password_client.getText().isEmpty() || client_address.getText().isEmpty()
                     || client_gender.getSelectionModel().getSelectedItem() == null
                     || client_phoneNum.getText().isEmpty()
                     || client_status.getSelectionModel().getSelectedItem() == null) {
                 emptyFields();
-            } else {
-                String checkData = "SELECT clientId, username, password FROM client WHERE clientId = ?";
+                return;
+            }
 
-                try (PreparedStatement prepare = connect.prepareStatement(checkData)) {
-                    prepare.setString(1, client_Id.getText());
-                    try (ResultSet result = prepare.executeQuery()) {
-                        if (!result.next()) {
-                            alert = new Alert(Alert.AlertType.ERROR);
-                            alert.setTitle("Error");
+            String checkData = "SELECT clientId, username, password FROM client WHERE clientId = ?";
+
+            try (PreparedStatement prepare = connect.prepareStatement(checkData)) {
+                prepare.setString(1, clientIdInput);
+                try (ResultSet result = prepare.executeQuery()) {
+                    if (!result.next()) {
+                        alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setTitle("Error");
+                        alert.setHeaderText(null);
+                        alert.setContentText("Client ID: " + clientIdInput + " is the wrong Client ID, try again!");
+                        alert.showAndWait();
+                    } else {
+                        boolean usernameChanged = !result.getString("username").equals(username_client.getText());
+                        boolean passwordChanged = !result.getString("password").equals(password_client.getText());
+
+                        if (usernameChanged || passwordChanged) {
+                            alert = new Alert(Alert.AlertType.CONFIRMATION);
+                            alert.setTitle("Confirmation Message");
                             alert.setHeaderText(null);
-                            alert.setContentText("Client ID: " + client_Id.getText() + " is the wrong Client ID, try again!");
-                            alert.showAndWait();
-                        } else {
-                            boolean usernameChanged = !result.getString("username").equals(username_client.getText());
-                            boolean passwordChanged = !result.getString("password").equals(password_client.getText());
+                            alert.setContentText("Are you sure you want to update the username and/or password?");
+                            Optional<ButtonType> confirmationResult = alert.showAndWait();
 
-                            if (usernameChanged || passwordChanged) {
-                                alert = new Alert(Alert.AlertType.CONFIRMATION);
-                                alert.setTitle("Confirmation Message");
-                                alert.setHeaderText(null);
-                                alert.setContentText("Are you sure you want to update the username and/or password?");
-                                Optional<ButtonType> confirmationResult = alert.showAndWait();
-
-                                if (!confirmationResult.isPresent() || !confirmationResult.get().equals(ButtonType.OK)) {
-                                    alert = new Alert(Alert.AlertType.INFORMATION);
-                                    alert.setTitle("Information Message");
-                                    alert.setHeaderText(null);
-                                    alert.setContentText("Update canceled!");
-                                    alert.showAndWait();
-                                    return;
-                                }
-                            }
-
-                            try (PreparedStatement updateStmt = connect.prepareStatement(sql)) {
-                                updateStmt.setString(1, client_name.getText());
-                                updateStmt.setString(2, username_client.getText());
-                                updateStmt.setString(3, password_client.getText());
-                                updateStmt.setString(4, client_address.getText());
-                                updateStmt.setString(5, (String) client_gender.getSelectionModel().getSelectedItem());
-                                updateStmt.setString(6, client_phoneNum.getText());
-                                updateStmt.setString(7, (String) client_status.getSelectionModel().getSelectedItem());
-                                updateStmt.setString(8, client_Id.getText());
-
-                                updateStmt.executeUpdate();
-
+                            if (!confirmationResult.isPresent() || !confirmationResult.get().equals(ButtonType.OK)) {
                                 alert = new Alert(Alert.AlertType.INFORMATION);
                                 alert.setTitle("Information Message");
                                 alert.setHeaderText(null);
-                                alert.setContentText("Successfully Updated!");
+                                alert.setContentText("Update canceled!");
                                 alert.showAndWait();
-
-                                clientClearBtn();
+                                return;
                             }
+                        }
+
+                        // Proceed with the update
+                        try (PreparedStatement updateStmt = connect.prepareStatement(sql)) {
+                            updateStmt.setString(1, client_name.getText());
+                            updateStmt.setString(2, username_client.getText());
+                            updateStmt.setString(3, password_client.getText());
+                            updateStmt.setString(4, client_address.getText());
+                            updateStmt.setString(5, (String) client_gender.getSelectionModel().getSelectedItem());
+                            updateStmt.setString(6, client_phoneNum.getText());
+                            updateStmt.setString(7, (String) client_status.getSelectionModel().getSelectedItem());
+                            updateStmt.setString(8, clientIdInput);
+
+                            updateStmt.executeUpdate();
+
+                            alert = new Alert(Alert.AlertType.INFORMATION);
+                            alert.setTitle("Information Message");
+                            alert.setHeaderText(null);
+                            alert.setContentText("Successfully Updated!");
+                            alert.showAndWait();
+
+                            clientClearBtn();
                         }
                     }
                 }
@@ -296,6 +323,10 @@ public class ClientController implements Initializable {
             e.printStackTrace();
         }
     }
+
+
+
+
 
 
 

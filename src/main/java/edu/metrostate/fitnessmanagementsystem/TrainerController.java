@@ -90,19 +90,29 @@ public class TrainerController implements Initializable {
         if (selectedClient != null && !fitnessPlan.isEmpty()) {
             String sql = "INSERT INTO fitnessplan(clientId, plan) VALUES(?, ?)";
             connect = Database.connectDB();
-            try (
-                 PreparedStatement pstmt = connect.prepareStatement(sql)) {
+            try (PreparedStatement pstmt = connect.prepareStatement(sql)) {
                 pstmt.setString(1, selectedClient.getClientId());
                 pstmt.setString(2, fitnessPlan);
                 pstmt.executeUpdate();
+
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Success");
+                alert.setHeaderText(null);
+                alert.setContentText("Fitness plan sent successfully!");
+                alert.showAndWait();
             } catch (Exception e) {
                 e.printStackTrace();
             }
             fitness_plan.clear(); // Clear the text area after sending
         } else {
-            // Handle the case where no client is selected or the fitness plan is empty
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText("Please select a client and write a fitness plan.");
+            alert.showAndWait();
         }
     }
+
 
     public ObservableList<ClientData> clientDataList() {
 

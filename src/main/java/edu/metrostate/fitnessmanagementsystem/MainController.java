@@ -25,6 +25,7 @@ import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ResourceBundle;
 
 public class MainController implements Initializable {
@@ -86,6 +87,7 @@ public class MainController implements Initializable {
     private Connection connect;
     private PreparedStatement prepare;
     private ResultSet result;
+    private Statement statement;
 
     public void login() {
         String sql = "SELECT * FROM client WHERE username = ? AND password = ?";
@@ -164,6 +166,19 @@ public class MainController implements Initializable {
                 alert.setContentText("Please do not leave the fields blank.");
                 alert.showAndWait();
             } else {
+                String checkData = "SELECT clientId FROM client WHERE clientId = '"
+                        + su_Id.getText() + "'";
+
+                statement = connect.createStatement();
+                result = statement.executeQuery(checkData);
+
+                if (result.next()) {
+                    alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Error");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Client ID: " + su_Id.getText() + " Is already taken!");
+                    alert.showAndWait();
+                } else {
                     prepare = connect.prepareStatement(sql);
                     prepare.setString(1, su_Id.getText());
                     prepare.setString(2, su_email.getText());
@@ -185,6 +200,8 @@ public class MainController implements Initializable {
                     su_password.setText("");
 
                 }
+
+            }
 
 
         } catch (Exception e) {
