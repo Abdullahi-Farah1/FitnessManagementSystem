@@ -26,7 +26,7 @@ tasks.withType(JavaCompile) {
 
 application {
   mainModule = 'edu.metrostate.fitnessmanagementsystem'
-  mainClass = 'edu.metrostate.fitnessmanagementsystem.HelloApplication'
+  mainClass = 'edu.metrostate.fitnessmanagementsystem.Mainpplication'
 }
 
 javafx {
