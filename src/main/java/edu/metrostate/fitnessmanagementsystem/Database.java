@@ -1,14 +1,16 @@
 package edu.metrostate.fitnessmanagementsystem;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 public class Database {
 
     static {
         try {
+            createDatabaseIfNotExists(); // Create the database if it doesn't exist
             Connection connection = connectDB();
             if (connection != null) {
                 initializeDatabase(connection);
@@ -19,9 +21,19 @@ public class Database {
         }
     }
 
+    private static void createDatabaseIfNotExists() {
+        try (Connection connection = DriverManager.getConnection("jdbc:mariadb://localhost:3306/", "root", "");
+             Statement stmt = connection.createStatement()) {
+            String createDatabase = "CREATE DATABASE IF NOT EXISTS fitness";
+            stmt.execute(createDatabase);
+        } catch (SQLException e) {
+            e.printStackTrace(); // Consider using a logger instead
+        }
+    }
+
     public static Connection connectDB() {
         try {
-            Connection connect = DriverManager.getConnection("jdbc:mysql://localhost:3306/fitness", "root", "");
+            Connection connect = DriverManager.getConnection("jdbc:mariadb://localhost:3306/fitness", "root", "");
             return connect;
         } catch (SQLException e) {
             e.printStackTrace(); // Consider using a logger instead
@@ -57,10 +69,10 @@ public class Database {
                 "password VARCHAR(50) DEFAULT '', " +
                 "address VARCHAR(200) DEFAULT '', " +
                 "gender VARCHAR(10) DEFAULT '', " +
-                "phoneNum INT DEFAULT 0, " +
+                "phoneNum BIGINT DEFAULT 0, " +
                 "status VARCHAR(20) DEFAULT '', " +
-                "trainerId INT DEFAULT NULL, " +
-                "FOREIGN KEY (trainerId) REFERENCES trainers(id) ON DELETE SET NULL ON UPDATE CASCADE" +
+                "trainerId VARCHAR(50) DEFAULT NULL, " +
+                "FOREIGN KEY (trainerId) REFERENCES trainers(trainerId) ON DELETE SET NULL ON UPDATE CASCADE" +
                 ");";
 
         String createFitnessPlanTable = "CREATE TABLE IF NOT EXISTS fitnessplan (" +
@@ -73,31 +85,35 @@ public class Database {
         try (Statement stmt = connection.createStatement()) {
             stmt.execute(createAdminsTable);
             stmt.execute(createTrainersTable);
-
-           /*String insertTrainerTemplate = "INSERT INTO trainers (trainerId, name, username, password, address, gender, phoneNum, status) " +
-                    "VALUES (%d, 'Trainer%d', 'trainer%d', 'password%d', 'Address%d', 'Male', %d, 'Active');";
-            String insertAdminTemplate = "INSERT INTO admin (username, password) " +
-                    "VALUES ('admin',12);";
-
-            for (int i = 1; i <= 20; i++) {
-                String insertTrainer = String.format(insertTrainerTemplate, i, i, i, i, i, i, 1234567890 + i);
-                stmt.execute(insertTrainer);
-            }
-
-            stmt.execute(insertAdminTemplate);*/
-
-            /*String insertClientTemplate = "INSERT INTO client (clientId, name, username, password, address, gender, phoneNum, status) " +
-                    "VALUES (%d, 'Client%d', 'Client%d', 'password%d', 'Address%d', 'Male', 80444%d, 'Active');";
-
-            for (int i = 1; i <= 20; i++) {
-                String insertTrainer = String.format(insertClientTemplate, i, i, i, i, i, i, 1234567890 + i);
-                stmt.execute(insertTrainer);
-            }*/
-
             stmt.execute(createClientsTable);
             stmt.execute(createFitnessPlanTable);
+
+            // Check if admin exists
+            String checkAdminQuery = "SELECT COUNT(*) FROM admin WHERE username = 'admin'";
+            ResultSet rs = stmt.executeQuery(checkAdminQuery);
+            rs.next();
+            if (rs.getInt(1) == 0) {
+                // Insert admin only if it doesn't exist
+                String insertAdmin = "INSERT INTO admin (username, password) VALUES ('admin', 'password')";
+                stmt.execute(insertAdmin);
+            }
+
+            // Check if trainers exist
+            String checkTrainerQuery = "SELECT COUNT(*) FROM trainers";
+            rs = stmt.executeQuery(checkTrainerQuery);
+            rs.next();
+            if (rs.getInt(1) == 0) {
+                // Insert trainers only if the table is empty
+                String insertTrainerTemplate = "INSERT INTO trainers (trainerId, name, username, password, address, gender, phoneNum, status) " +
+                        "VALUES (%d, 'Trainer%d', 'trainer%d', 'password%d', 'Address%d', 'Male', %d, 'Active')";
+                for (int i = 1; i <= 20; i++) {
+                    String insertTrainer = String.format(insertTrainerTemplate, i, i, i, i, i, 1234567890 + i);
+                    stmt.execute(insertTrainer);
+                }
+            }
+
         } catch (SQLException e) {
-            e.printStackTrace();
+            e.printStackTrace(); // Consider using a logger instead
         }
     }
 
