@@ -248,7 +248,7 @@ public class ClientController implements Initializable {
                 alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Error");
                 alert.setHeaderText(null);
-                alert.setContentText("Client Id belongs to another client!");
+                alert.setContentText("Invalid Client Id!");
                 alert.showAndWait();
                 return;
             }

@@ -128,7 +128,7 @@ public class AdminController implements Initializable {
     private AnchorPane trainer_form;
 
     @FXML
-    private ComboBox<?> trainer_gender;
+    private ComboBox<String> trainer_gender;
 
     @FXML
     private TextField trainer_name;
@@ -137,7 +137,7 @@ public class AdminController implements Initializable {
     private TextField trainer_phoneNum;
 
     @FXML
-    private ComboBox<?> trainer_status;
+    private ComboBox<String> trainer_status;
 
     @FXML
     private TableView<TrainerData> trainer_tableView;
@@ -161,9 +161,7 @@ public class AdminController implements Initializable {
 
         connect = Database.connectDB();
 
-
         try {
-
             prepare = connect.prepareStatement(sql);
             result = prepare.executeQuery();
 
@@ -179,15 +177,12 @@ public class AdminController implements Initializable {
                 listData.add(cd);
             }
 
-
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
         return listData;
     }
-
-
 
     private ObservableList<ClientData> clientListData;
 
@@ -208,8 +203,7 @@ public class AdminController implements Initializable {
     }
 
     public void emptyFields() {
-        Alert alert;
-        alert = new Alert(Alert.AlertType.ERROR);
+        Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Blank Fields");
         alert.setHeaderText(null);
         alert.setContentText("Please do not leave the fields blank.");
@@ -220,47 +214,38 @@ public class AdminController implements Initializable {
         ClientData selectedClient = client_tableView.getSelectionModel().getSelectedItem();
 
         if (selectedClient != null) {
-            // Delete from the database
             String sql = "DELETE FROM client WHERE clientId = ?";
 
             connect = Database.connectDB();
 
-            try {  Alert alert;
+            try {
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setTitle("Confirmation Message");
+                alert.setHeaderText(null);
+                alert.setContentText("Are you sure you want to delete Client ID: " + selectedClient.getClientId() + "?");
+                Optional<ButtonType> result = alert.showAndWait();
 
-                    alert = new Alert(Alert.AlertType.CONFIRMATION);
-                    alert.setTitle("Confirmation Message");
+                if(result.isPresent() && result.get().equals(ButtonType.OK)) {
+                    prepare = connect.prepareStatement(sql);
+                    prepare.setString(1, selectedClient.getClientId());
+                    prepare.executeUpdate();
+
+                    clientListData.remove(selectedClient);
+
+                    alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Information Message");
                     alert.setHeaderText(null);
-                    alert.setContentText("Are you sure you want to Delete Client ID: " + cientCol_Id.getText() + " ? ");
-                    Optional<ButtonType> result = alert.showAndWait();
+                    alert.setContentText("Successfully Deleted!");
+                    alert.showAndWait();
 
-                    if(result.get().equals(ButtonType.OK)) {
-
-                        prepare = connect.prepareStatement(sql);
-                        prepare.setString(1, selectedClient.getClientId());
-                        prepare.executeUpdate();
-
-                        // Remove from the ObservableList
-                        clientListData.remove(selectedClient);
-
-                        alert = new Alert(Alert.AlertType.INFORMATION);
-                        alert.setTitle("Information Message");
-                        alert.setHeaderText(null);
-                        alert.setContentText("Successfully Deleted!");
-                        alert.showAndWait();
-
-                        trainersShowData();
-
-                        trainersClearBtn();
-
-                    } else {
-
-                        alert = new Alert(Alert.AlertType.ERROR);
-                        alert.setTitle("Information Message");
-                        alert.setHeaderText(null);
-                        alert.setContentText("Canceled Deletion!");
-                        alert.showAndWait();
-
-                    }
+                    clientShowData();
+                } else {
+                    alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Information Message");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Deletion canceled!");
+                    alert.showAndWait();
+                }
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -275,49 +260,43 @@ public class AdminController implements Initializable {
         }
     }
 
-
-
     public void trainersAddBtn() {
-
-        String sql = "INSERT INTO trainers (trainerId, name, Username, password, address, gender, phoneNum, status)"
-                        + "VALUES(?,?,?,?,?,?,?,?)";
+        String sql = "INSERT INTO trainers (trainerId, name, username, password, address, gender, phoneNum, status)"
+                + "VALUES(?,?,?,?,?,?,?,?)";
 
         connect = Database.connectDB();
 
         try {
-
             Alert alert;
 
             if(trainer_Id.getText().isEmpty() || trainer_name.getText().isEmpty() || username_trainer.getText().isEmpty() ||
-                password_trainer.getText().isEmpty() || trainer_address.getText().isEmpty()
+                    password_trainer.getText().isEmpty() || trainer_address.getText().isEmpty()
                     || trainer_gender.getSelectionModel().getSelectedItem() == null
                     || trainer_phoneNum.getText().isEmpty()
                     || trainer_status.getSelectionModel().getSelectedItem() == null) {
                 emptyFields();
             } else {
-
-                String checkData = "SELECT trainerId FROM trainers WHERE trainerId = '"
-                        + trainer_Id.getText() + "'";
-
-                statement = connect.createStatement();
-                result = statement.executeQuery(checkData);
+                String checkData = "SELECT trainerId FROM trainers WHERE trainerId = ?";
+                prepare = connect.prepareStatement(checkData);
+                prepare.setString(1, trainer_Id.getText());
+                result = prepare.executeQuery();
 
                 if(result.next()) {
                     alert = new Alert(Alert.AlertType.ERROR);
                     alert.setTitle("Error");
                     alert.setHeaderText(null);
-                    alert.setContentText("Trainer ID: " + trainer_Id.getText() + " Is already taken!");
+                    alert.setContentText("Trainer ID: " + trainer_Id.getText() + " is already taken!");
                     alert.showAndWait();
                 } else {
                     prepare = connect.prepareStatement(sql);
-                    prepare.setString(1,trainer_Id.getText());
-                    prepare.setString(2,trainer_name.getText());
-                    prepare.setString(3,username_trainer.getText());
-                    prepare.setString(4,password_trainer.getText());
-                    prepare.setString(5,trainer_address.getText());
-                    prepare.setString(6,(String) trainer_gender.getSelectionModel().getSelectedItem());
-                    prepare.setString(7,trainer_phoneNum.getText());
-                    prepare.setString(8,(String) trainer_status.getSelectionModel().getSelectedItem());
+                    prepare.setString(1, trainer_Id.getText());
+                    prepare.setString(2, trainer_name.getText());
+                    prepare.setString(3, username_trainer.getText());
+                    prepare.setString(4, password_trainer.getText());
+                    prepare.setString(5, trainer_address.getText());
+                    prepare.setString(6, trainer_gender.getSelectionModel().getSelectedItem());
+                    prepare.setString(7, trainer_phoneNum.getText());
+                    prepare.setString(8, trainer_status.getSelectionModel().getSelectedItem());
 
                     alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setTitle("Information Message");
@@ -333,8 +312,15 @@ public class AdminController implements Initializable {
 
             }
 
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if (prepare != null) prepare.close();
+                if (connect != null) connect.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -347,21 +333,10 @@ public class AdminController implements Initializable {
         trainer_gender.getSelectionModel().clearSelection();
         trainer_phoneNum.setText("");
         trainer_status.getSelectionModel().clearSelection();
-
-
     }
 
     public void trainersUpdateBtn() {
-
-        String sql = "UPDATE trainers SET name = '"
-                + trainer_name.getText() + "', username = '"
-                + username_trainer.getText() + "', password = '"
-                + password_trainer.getText() + "', address = '"
-                + trainer_address.getText() + "', gender = '"
-                + trainer_gender.getSelectionModel().getSelectedItem() + "', phoneNum = '"
-                + trainer_phoneNum.getText() + "', status = '"
-                + trainer_status.getSelectionModel().getSelectedItem() + "' WHERE trainerId = '"
-                +trainer_Id.getText() + "'";
+        String sql = "UPDATE trainers SET name = ?, username = ?, password = ?, address = ?, gender = ?, phoneNum = ?, status = ? WHERE trainerId = ?";
 
         connect = Database.connectDB();
 
@@ -375,16 +350,22 @@ public class AdminController implements Initializable {
                     || trainer_status.getSelectionModel().getSelectedItem() == null) {
                 emptyFields();
             } else {
-
                 alert = new Alert(Alert.AlertType.CONFIRMATION);
                 alert.setTitle("Confirmation Message");
                 alert.setHeaderText(null);
-                alert.setContentText("Are you sure you want to Update Trainer ID: " + trainer_Id.getText() + " ? ");
+                alert.setContentText("Are you sure you want to update Trainer ID: " + trainer_Id.getText() + "?");
                 Optional<ButtonType> result = alert.showAndWait();
 
-                if(result.get().equals(ButtonType.OK)) {
-
+                if(result.isPresent() && result.get().equals(ButtonType.OK)) {
                     prepare = connect.prepareStatement(sql);
+                    prepare.setString(1, trainer_name.getText());
+                    prepare.setString(2, username_trainer.getText());
+                    prepare.setString(3, password_trainer.getText());
+                    prepare.setString(4, trainer_address.getText());
+                    prepare.setString(5, trainer_gender.getSelectionModel().getSelectedItem());
+                    prepare.setString(6, trainer_phoneNum.getText());
+                    prepare.setString(7, trainer_status.getSelectionModel().getSelectedItem());
+                    prepare.setString(8, trainer_Id.getText());
                     prepare.executeUpdate();
 
                     alert = new Alert(Alert.AlertType.INFORMATION);
@@ -394,98 +375,89 @@ public class AdminController implements Initializable {
                     alert.showAndWait();
 
                     trainersShowData();
-
                     trainersClearBtn();
-
-
-
                 } else {
-
                     alert = new Alert(Alert.AlertType.ERROR);
                     alert.setTitle("Information Message");
                     alert.setHeaderText(null);
-                    alert.setContentText("Canceled Updated!");
+                    alert.setContentText("Update canceled!");
                     alert.showAndWait();
-
                 }
-
             }
-
-
-        } catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if (prepare != null) prepare.close();
+                if (connect != null) connect.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
-
     }
 
-   public void trainerDeleteBtn() {
+    public void trainerDeleteBtn() {
+        String sql = "DELETE FROM trainers WHERE trainerId = ?";
 
-        String sql = "DELETE FROM trainers WHERE trainerId = '"
-                + trainer_Id.getText() + "'";
+        connect = Database.connectDB();
 
-       connect = Database.connectDB();
+        try {
+            Alert alert;
 
-       try {
-           Alert alert;
+            if(trainer_Id.getText().isEmpty() || trainer_name.getText().isEmpty() || username_trainer.getText().isEmpty() ||
+                    password_trainer.getText().isEmpty() || trainer_address.getText().isEmpty()
+                    || trainer_gender.getSelectionModel().getSelectedItem() == null
+                    || trainer_phoneNum.getText().isEmpty()
+                    || trainer_status.getSelectionModel().getSelectedItem() == null) {
+                emptyFields();
+            } else {
+                alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setTitle("Confirmation Message");
+                alert.setHeaderText(null);
+                alert.setContentText("Are you sure you want to delete Trainer ID: " + trainer_Id.getText() + "?");
+                Optional<ButtonType> result = alert.showAndWait();
 
-           if(trainer_Id.getText().isEmpty() || trainer_name.getText().isEmpty() || username_trainer.getText().isEmpty() ||
-                   password_trainer.getText().isEmpty() || trainer_address.getText().isEmpty()
-                   || trainer_gender.getSelectionModel().getSelectedItem() == null
-                   || trainer_phoneNum.getText().isEmpty()
-                   || trainer_status.getSelectionModel().getSelectedItem() == null) {
-               emptyFields();
-           } else {
+                if(result.isPresent() && result.get().equals(ButtonType.OK)) {
+                    prepare = connect.prepareStatement(sql);
+                    prepare.setString(1, trainer_Id.getText());
+                    prepare.executeUpdate();
 
-               alert = new Alert(Alert.AlertType.CONFIRMATION);
-               alert.setTitle("Confirmation Message");
-               alert.setHeaderText(null);
-               alert.setContentText("Are you sure you want to Delete Trainer ID: " + trainer_Id.getText() + " ? ");
-               Optional<ButtonType> result = alert.showAndWait();
+                    alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Information Message");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Successfully Deleted!");
+                    alert.showAndWait();
 
-               if(result.get().equals(ButtonType.OK)) {
-
-                   prepare = connect.prepareStatement(sql);
-                   prepare.executeUpdate();
-
-                   alert = new Alert(Alert.AlertType.INFORMATION);
-                   alert.setTitle("Information Message");
-                   alert.setHeaderText(null);
-                   alert.setContentText("Successfully Deleted!");
-                   alert.showAndWait();
-
-                   trainersShowData();
-
-                   trainersClearBtn();
-
-               } else {
-
-                   alert = new Alert(Alert.AlertType.ERROR);
-                   alert.setTitle("Information Message");
-                   alert.setHeaderText(null);
-                   alert.setContentText("Canceled Deletion!");
-                   alert.showAndWait();
-
-               }
-
-           }
-
-
-       } catch(Exception e) {
-           e.printStackTrace();
-       }
+                    trainersShowData();
+                    trainersClearBtn();
+                } else {
+                    alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Information Message");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Deletion canceled!");
+                    alert.showAndWait();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (prepare != null) prepare.close();
+                if (connect != null) connect.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public ObservableList<TrainerData> trainersDataList() {
-
         ObservableList<TrainerData> listData = FXCollections.observableArrayList();
 
         String sql = "SELECT * FROM trainers";
 
         connect = Database.connectDB();
 
-
         try {
-
             prepare = connect.prepareStatement(sql);
             result = prepare.executeQuery();
 
@@ -493,16 +465,15 @@ public class AdminController implements Initializable {
 
             while (result.next()) {
                 td = new TrainerData(result.getInt("id"), result.getString("trainerId"),result.getString("name"),
-                                    result.getString("username"),
-                                        result.getString("password"), result.getString("address"),
-                                             result.getString("gender"),result.getInt("phoneNum"),
-                                                 result.getString("status"));
+                        result.getString("username"),
+                        result.getString("password"), result.getString("address"),
+                        result.getString("gender"),result.getInt("phoneNum"),
+                        result.getString("status"));
 
                 listData.add(td);
             }
 
-
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -512,7 +483,6 @@ public class AdminController implements Initializable {
     private ObservableList<TrainerData> trainersListData;
 
     public void trainersShowData() {
-
         trainersListData = trainersDataList();
 
         trainer_col_trainerID.setCellValueFactory(new PropertyValueFactory<>("trainerId"));
@@ -524,7 +494,6 @@ public class AdminController implements Initializable {
         trainer_col_trainerStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
 
         trainer_tableView.setItems(trainersListData);
-
     }
 
     public void trainersSelect() {
@@ -539,45 +508,31 @@ public class AdminController implements Initializable {
         password_trainer.setText(td.getPassword());
         trainer_address.setText(td.getAddress());
         trainer_phoneNum.setText(String.valueOf(td.getPhoneNum()));
-
-
     }
 
-
-    private String gender[] = {"Male", "Female", "Other"};
+    private String[] gender = {"Male", "Female", "Other"};
 
     public void trainersGenderList() {
-        List<String> genderlist = new ArrayList<String>();
-
-        for(String data: gender) {
-            genderlist.add(data);
-        }
-
-        ObservableList listData = FXCollections.observableArrayList(genderlist);
+        ObservableList<String> listData = FXCollections.observableArrayList(gender);
         trainer_gender.setItems(listData);
     }
 
-    private String status[] = {"Active", "Inactive"};
+    private String[] status = {"Active", "Inactive"};
 
     public void trainerStatusList() {
-        List<String> statuslist = new ArrayList<String>();
-
-        for(String data: status) {
-            statuslist.add(data);
-        }
-
-        ObservableList listData = FXCollections.observableArrayList(statuslist);
+        ObservableList<String> listData = FXCollections.observableArrayList(status);
         trainer_status.setItems(listData);
     }
 
     public void switchForm (ActionEvent event) {
         if (event.getSource() == dashboard_btn) {
-
             dashboard_form.setVisible(true);
             trainer_form.setVisible(false);
             client_form.setVisible(false);
 
         } else if (event.getSource() == btn_trainers) {
+            trainer_gender.getSelectionModel().clearSelection();
+            trainer_status.getSelectionModel().clearSelection();
             trainer_form.setVisible(true);
             client_form.setVisible(false);
             dashboard_form.setVisible(false);
@@ -597,17 +552,14 @@ public class AdminController implements Initializable {
     private double y = 0;
 
     public void logout() {
-
         try {
-
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Logout");
             alert.setHeaderText(null);
             alert.setContentText("Are you sure you want to logout?");
             Optional<ButtonType> option = alert.showAndWait();
 
-            if(option.get().equals(ButtonType.OK)) {
-
+            if(option.isPresent() && option.get().equals(ButtonType.OK)) {
                 logout_btn.getScene().getWindow().hide();
 
                 Parent root = FXMLLoader.load(getClass().getResource("admin-trainer.fxml"));
@@ -623,7 +575,6 @@ public class AdminController implements Initializable {
                 root.setOnMouseDragged((MouseEvent event) -> {
                     stage.setX(event.getScreenX() - x);
                     stage.setY(event.getScreenY() - y);
-
                     stage.setOpacity(.8);
                 });
 
@@ -632,13 +583,9 @@ public class AdminController implements Initializable {
                 });
 
                 stage.initStyle(StageStyle.TRANSPARENT);
-
                 stage.setScene(scene);
                 stage.show();
-
-
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -661,4 +608,3 @@ public class AdminController implements Initializable {
         clientShowData();
     }
 }
-
