@@ -25,8 +25,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import org.jfree.chart.JFreeChart;
 
 public class AdminController implements Initializable {
+
 
     @FXML
     private TableColumn<ClientData, String> cientCol_Id;
@@ -222,7 +224,7 @@ public class AdminController implements Initializable {
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
                 alert.setTitle("Confirmation Message");
                 alert.setHeaderText(null);
-                alert.setContentText("Are you sure you want to delete Client ID: " + selectedClient.getClientId() + "?");
+                alert.setContentText("Are you sure you want to delete ClientID: " + selectedClient.getClientId() + " ?");
                 Optional<ButtonType> result = alert.showAndWait();
 
                 if(result.isPresent() && result.get().equals(ButtonType.OK)) {
@@ -353,7 +355,7 @@ public class AdminController implements Initializable {
                 alert = new Alert(Alert.AlertType.CONFIRMATION);
                 alert.setTitle("Confirmation Message");
                 alert.setHeaderText(null);
-                alert.setContentText("Are you sure you want to update Trainer ID: " + trainer_Id.getText() + "?");
+                alert.setContentText("Are you sure you want to update TrainerID: " + trainer_Id.getText() + " ?");
                 Optional<ButtonType> result = alert.showAndWait();
 
                 if(result.isPresent() && result.get().equals(ButtonType.OK)) {
@@ -414,7 +416,7 @@ public class AdminController implements Initializable {
                 alert = new Alert(Alert.AlertType.CONFIRMATION);
                 alert.setTitle("Confirmation Message");
                 alert.setHeaderText(null);
-                alert.setContentText("Are you sure you want to delete Trainer ID: " + trainer_Id.getText() + "?");
+                alert.setContentText("Are you sure you want to delete TrainerID: " + trainer_Id.getText() + " ?");
                 Optional<ButtonType> result = alert.showAndWait();
 
                 if(result.isPresent() && result.get().equals(ButtonType.OK)) {

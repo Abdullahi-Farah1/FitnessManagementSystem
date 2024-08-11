@@ -130,24 +130,79 @@ public class ClientController implements Initializable {
         ClientData currentClient = SessionManager.getCurrentClient();
 
         if (selectedTrainer != null && currentClient != null) {
-            currentClient.setTrainerId(selectedTrainer.getTrainerId());
-
-            String sql = "UPDATE client SET trainerId = ? WHERE clientId = ?";
+            String checkTrainerSql = "SELECT trainerId FROM client WHERE clientId = ?";
             connect = Database.connectDB();
 
             try {
-                prepare = connect.prepareStatement(sql);
-                prepare.setString(1, selectedTrainer.getTrainerId());
-                prepare.setString(2, currentClient.getClientId());
-                prepare.executeUpdate();
+                prepare = connect.prepareStatement(checkTrainerSql);
+                prepare.setString(1, currentClient.getClientId());
+                result = prepare.executeQuery();
 
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Success");
-                alert.setHeaderText(null);
-                alert.setContentText("Trainer assigned successfully!");
-                alert.showAndWait();
+                if (result.next()) {
+                    String assignedTrainerId = result.getString("trainerId");
+
+                    if (assignedTrainerId != null && !assignedTrainerId.isEmpty()) {
+                        // If a different trainer is already assigned, ask for confirmation
+                        if (!assignedTrainerId.equals(selectedTrainer.getTrainerId())) {
+                            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                            alert.setTitle("Confirmation");
+                            alert.setHeaderText(null);
+                            alert.setContentText("This client already has a trainer assigned. Do you want to change the trainer to TrainerID:  " + selectedTrainer.getTrainerId() + " ?");
+
+                            Optional<ButtonType> result = alert.showAndWait();
+                            if (result.isPresent() && result.get() == ButtonType.OK) {
+                                // Proceed to update the trainer if the user confirms
+                                currentClient.setTrainerId(selectedTrainer.getTrainerId());
+                                String updateSql = "UPDATE client SET trainerId = ? WHERE clientId = ?";
+                                prepare = connect.prepareStatement(updateSql);
+                                prepare.setString(1, selectedTrainer.getTrainerId());
+                                prepare.setString(2, currentClient.getClientId());
+                                prepare.executeUpdate();
+
+                                Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
+                                successAlert.setTitle("Success");
+                                successAlert.setHeaderText(null);
+                                successAlert.setContentText("Trainer updated successfully!");
+                                successAlert.showAndWait();
+                            } else {
+                                // If the user cancels, do nothing
+                                return;
+                            }
+                        } else {
+                            // If the same trainer is selected, no need to update
+                            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                            alert.setTitle("No Change");
+                            alert.setHeaderText(null);
+                            alert.setContentText("The selected trainer is already assigned to this client.");
+                            alert.showAndWait();
+                            return;
+                        }
+                    } else {
+                        // If no trainer is assigned, assign the selected trainer
+                        currentClient.setTrainerId(selectedTrainer.getTrainerId());
+                        String updateSql = "UPDATE client SET trainerId = ? WHERE clientId = ?";
+                        prepare = connect.prepareStatement(updateSql);
+                        prepare.setString(1, selectedTrainer.getTrainerId());
+                        prepare.setString(2, currentClient.getClientId());
+                        prepare.executeUpdate();
+
+                        Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
+                        successAlert.setTitle("Success");
+                        successAlert.setHeaderText(null);
+                        successAlert.setContentText("Trainer assigned successfully!");
+                        successAlert.showAndWait();
+                    }
+                }
             } catch (Exception e) {
                 e.printStackTrace();
+            } finally {
+                try {
+                    if (result != null) result.close();
+                    if (prepare != null) prepare.close();
+                    if (connect != null) connect.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         } else {
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -157,6 +212,7 @@ public class ClientController implements Initializable {
             alert.showAndWait();
         }
     }
+
 
 
 
@@ -323,13 +379,6 @@ public class ClientController implements Initializable {
             e.printStackTrace();
         }
     }
-
-
-
-
-
-
-
 
 
 

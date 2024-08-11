@@ -170,7 +170,7 @@
                               <Separator layoutX="17.0" layoutY="174.0" prefHeight="11.0" prefWidth="846.0" />
                            </children>
                         </AnchorPane>
-                        <AnchorPane fx:id="trainer_form" layoutX="318.0" layoutY="159.0" prefHeight="555.0" prefWidth="881.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <AnchorPane fx:id="trainer_form" layoutX="318.0" layoutY="159.0" prefHeight="555.0" prefWidth="881.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <children>
                               <AnchorPane layoutX="14.0" layoutY="16.0" prefHeight="523.0" prefWidth="283.0" stylesheets="@adminDesign.css">
                                  <styleClass>
@@ -282,7 +282,7 @@
                               <Separator layoutX="308.0" layoutY="20.0" orientation="VERTICAL" prefHeight="517.0" prefWidth="2.0" />
                            </children>
                         </AnchorPane>
-                        <AnchorPane fx:id="client_form" layoutX="177.0" layoutY="145.0" prefHeight="555.0" prefWidth="881.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <AnchorPane fx:id="client_form" layoutX="177.0" layoutY="145.0" prefHeight="555.0" prefWidth="881.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <children>
                               <AnchorPane layoutX="33.0" layoutY="127.0" prefHeight="414.0" prefWidth="787.0" stylesheets="@adminDesign.css">
                                  <styleClass>
