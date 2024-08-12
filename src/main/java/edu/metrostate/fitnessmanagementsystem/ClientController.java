@@ -56,6 +56,9 @@ public class ClientController implements Initializable {
     private TextField client_name;
 
     @FXML
+    private TextField email_client;
+
+    @FXML
     private TextField client_phoneNum;
 
     @FXML
@@ -120,7 +123,7 @@ public class ClientController implements Initializable {
     public void displayUsername() {
         String user = SessionManager.username;
 
-        user = user.substring(0,1).toUpperCase() + user.substring(1);
+        user = user.substring(0, 1).toUpperCase() + user.substring(1);
 
         clientUser.setText(user);
     }
@@ -130,10 +133,51 @@ public class ClientController implements Initializable {
         ClientData currentClient = SessionManager.getCurrentClient();
 
         if (selectedTrainer != null && currentClient != null) {
-            String checkTrainerSql = "SELECT trainerId FROM client WHERE clientId = ?";
             connect = Database.connectDB();
 
             try {
+
+                String checkClientStatusSql = "SELECT status FROM client WHERE clientId = ?";
+                prepare = connect.prepareStatement(checkClientStatusSql);
+                prepare.setString(1, currentClient.getClientId());
+                result = prepare.executeQuery();
+
+                if (result.next()) {
+                    String clientStatus = result.getString("status");
+
+                    if ("Inactive".equalsIgnoreCase(clientStatus)) {
+
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setTitle("Error");
+                        alert.setHeaderText(null);
+                        alert.setContentText("Must be an ACTIVE Client to choose a Trainer.");
+                        alert.showAndWait();
+                        return;
+                    }
+                }
+
+
+                String checkTrainerStatusSql = "SELECT status FROM trainers WHERE trainerId = ?";
+                prepare = connect.prepareStatement(checkTrainerStatusSql);
+                prepare.setString(1, selectedTrainer.getTrainerId());
+                result = prepare.executeQuery();
+
+                if (result.next()) {
+                    String trainerStatus = result.getString("status");
+
+                    if ("Inactive".equalsIgnoreCase(trainerStatus)) {
+
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setTitle("Error");
+                        alert.setHeaderText(null);
+                        alert.setContentText("The selected trainer is INACTIVE and cannot be assigned.");
+                        alert.showAndWait();
+                        return;
+                    }
+                }
+
+
+                String checkTrainerSql = "SELECT trainerId FROM client WHERE clientId = ?";
                 prepare = connect.prepareStatement(checkTrainerSql);
                 prepare.setString(1, currentClient.getClientId());
                 result = prepare.executeQuery();
@@ -142,16 +186,16 @@ public class ClientController implements Initializable {
                     String assignedTrainerId = result.getString("trainerId");
 
                     if (assignedTrainerId != null && !assignedTrainerId.isEmpty()) {
-                        // If a different trainer is already assigned, ask for confirmation
+
                         if (!assignedTrainerId.equals(selectedTrainer.getTrainerId())) {
                             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
                             alert.setTitle("Confirmation");
                             alert.setHeaderText(null);
-                            alert.setContentText("This client already has a trainer assigned. Do you want to change the trainer to TrainerID:  " + selectedTrainer.getTrainerId() + " ?");
+                            alert.setContentText("Client already has a trainer assigned. Do you want to change your trainer to TrainerID: " + selectedTrainer.getTrainerId() + " ?");
 
-                            Optional<ButtonType> result = alert.showAndWait();
-                            if (result.isPresent() && result.get() == ButtonType.OK) {
-                                // Proceed to update the trainer if the user confirms
+                            Optional<ButtonType> confirmationResult = alert.showAndWait();
+                            if (confirmationResult.isPresent() && confirmationResult.get() == ButtonType.OK) {
+
                                 currentClient.setTrainerId(selectedTrainer.getTrainerId());
                                 String updateSql = "UPDATE client SET trainerId = ? WHERE clientId = ?";
                                 prepare = connect.prepareStatement(updateSql);
@@ -165,20 +209,18 @@ public class ClientController implements Initializable {
                                 successAlert.setContentText("Trainer updated successfully!");
                                 successAlert.showAndWait();
                             } else {
-                                // If the user cancels, do nothing
-                                return;
                             }
                         } else {
-                            // If the same trainer is selected, no need to update
+
                             Alert alert = new Alert(Alert.AlertType.INFORMATION);
                             alert.setTitle("No Change");
                             alert.setHeaderText(null);
                             alert.setContentText("The selected trainer is already assigned to this client.");
                             alert.showAndWait();
-                            return;
+
                         }
                     } else {
-                        // If no trainer is assigned, assign the selected trainer
+
                         currentClient.setTrainerId(selectedTrainer.getTrainerId());
                         String updateSql = "UPDATE client SET trainerId = ? WHERE clientId = ?";
                         prepare = connect.prepareStatement(updateSql);
@@ -212,8 +254,6 @@ public class ClientController implements Initializable {
             alert.showAndWait();
         }
     }
-
-
 
 
     public void emptyFields() {
@@ -254,25 +294,25 @@ public class ClientController implements Initializable {
     private ObservableList<FitnessPlanData> fitnessPlanListData;
 
     public void fitnessPlanShowData() {
-        // Retrieve the current client from the session
+
         ClientData currentClient = SessionManager.getCurrentClient();
 
-        // Initialize the list to hold the fitness plans
+
         ObservableList<FitnessPlanData> filteredPlans = FXCollections.observableArrayList();
 
-        // Only proceed if a client is logged in
+
         if (currentClient != null) {
             // Get all fitness plans
             fitnessPlanListData = fitnessPlanDataList();
 
-            // Filter the plans to include only those belonging to the logged-in client
+
             for (FitnessPlanData plan : fitnessPlanListData) {
                 if (currentClient.getClientId().equals(plan.getClientId())) {
                     filteredPlans.add(plan);
                 }
             }
 
-            // Set the filtered plans to the table view
+
             fitnessPlan_col.setCellValueFactory(new PropertyValueFactory<>("plan"));
             fitnessPlan_table.setItems(filteredPlans);
         }
@@ -282,6 +322,7 @@ public class ClientController implements Initializable {
     public void clientClearBtn() {
         client_Id.setText("");
         client_name.setText("");
+        email_client.setText("");
         username_client.setText("");
         password_client.setText("");
         client_address.setText("");
@@ -299,7 +340,7 @@ public class ClientController implements Initializable {
             String clientIdInput = client_Id.getText().trim();
             String loggedInClientId = SessionManager.getCurrentClient().getClientId();
 
-            // Ensure the loggedInClientId is the same as the clientIdInput
+
             if (!clientIdInput.equals(loggedInClientId)) {
                 alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Error");
@@ -310,16 +351,12 @@ public class ClientController implements Initializable {
             }
 
             // Check if any field is empty
-            if (clientIdInput.isEmpty() || client_name.getText().isEmpty() || username_client.getText().isEmpty() ||
-                    password_client.getText().isEmpty() || client_address.getText().isEmpty()
-                    || client_gender.getSelectionModel().getSelectedItem() == null
-                    || client_phoneNum.getText().isEmpty()
-                    || client_status.getSelectionModel().getSelectedItem() == null) {
+            if (clientIdInput.isEmpty() || client_name.getText().isEmpty() || email_client.getText().isEmpty() || username_client.getText().isEmpty() || password_client.getText().isEmpty() || client_address.getText().isEmpty() || client_gender.getSelectionModel().getSelectedItem() == null || client_phoneNum.getText().isEmpty() || client_status.getSelectionModel().getSelectedItem() == null) {
                 emptyFields();
                 return;
             }
 
-            String checkData = "SELECT clientId, username, password FROM client WHERE clientId = ?";
+            String checkData = "SELECT clientId, username, password, email FROM client WHERE clientId = ?";
 
             try (PreparedStatement prepare = connect.prepareStatement(checkData)) {
                 prepare.setString(1, clientIdInput);
@@ -333,12 +370,13 @@ public class ClientController implements Initializable {
                     } else {
                         boolean usernameChanged = !result.getString("username").equals(username_client.getText());
                         boolean passwordChanged = !result.getString("password").equals(password_client.getText());
+                        boolean emailChanged = !result.getString("email").equals(email_client.getText());
 
-                        if (usernameChanged || passwordChanged) {
+                        if (usernameChanged || passwordChanged || emailChanged) {
                             alert = new Alert(Alert.AlertType.CONFIRMATION);
                             alert.setTitle("Confirmation Message");
                             alert.setHeaderText(null);
-                            alert.setContentText("Are you sure you want to update the username and/or password?");
+                            alert.setContentText("Are you sure you want to update the username, email, and/or password?");
                             Optional<ButtonType> confirmationResult = alert.showAndWait();
 
                             if (!confirmationResult.isPresent() || !confirmationResult.get().equals(ButtonType.OK)) {
@@ -351,7 +389,7 @@ public class ClientController implements Initializable {
                             }
                         }
 
-                        // Proceed with the update
+
                         try (PreparedStatement updateStmt = connect.prepareStatement(sql)) {
                             updateStmt.setString(1, client_name.getText());
                             updateStmt.setString(2, username_client.getText());
@@ -381,7 +419,6 @@ public class ClientController implements Initializable {
     }
 
 
-
     public ObservableList<TrainerData> trainersDataList() {
 
         ObservableList<TrainerData> listData = FXCollections.observableArrayList();
@@ -399,17 +436,13 @@ public class ClientController implements Initializable {
             TrainerData td;
 
             while (result.next()) {
-                td = new TrainerData(result.getInt("id"), result.getString("trainerId"),result.getString("name"),
-                        result.getString("username"),
-                        result.getString("password"), result.getString("address"),
-                        result.getString("gender"),result.getInt("phoneNum"),
-                        result.getString("status"));
+                td = new TrainerData(result.getInt("id"), result.getString("trainerId"), result.getString("name"), result.getString("email"), result.getString("username"), result.getString("password"), result.getString("address"), result.getString("gender"), result.getInt("phoneNum"), result.getString("status"));
 
                 listData.add(td);
             }
 
 
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -438,7 +471,7 @@ public class ClientController implements Initializable {
     public void clientGenderList() {
         List<String> genderlist = new ArrayList<String>();
 
-        for(String data: gender) {
+        for (String data : gender) {
             genderlist.add(data);
         }
 
@@ -451,7 +484,7 @@ public class ClientController implements Initializable {
     public void clientStatusList() {
         List<String> statuslist = new ArrayList<String>();
 
-        for(String data: status) {
+        for (String data : status) {
             statuslist.add(data);
         }
 
@@ -459,7 +492,7 @@ public class ClientController implements Initializable {
         client_status.setItems(listData);
     }
 
-    public void switchForm (ActionEvent event) {
+    public void switchForm(ActionEvent event) {
         if (event.getSource() == clientProfile_dash) {
 
             clientProfile_Form.setVisible(true);
@@ -480,6 +513,7 @@ public class ClientController implements Initializable {
 
     private double x = 0;
     private double y = 0;
+
     public void logout() {
 
         try {
@@ -490,7 +524,7 @@ public class ClientController implements Initializable {
             alert.setContentText("Are you sure you want to logout?");
             Optional<ButtonType> option = alert.showAndWait();
 
-            if(option.get().equals(ButtonType.OK)) {
+            if (option.get().equals(ButtonType.OK)) {
 
                 logout_btn.getScene().getWindow().hide();
 
@@ -536,7 +570,6 @@ public class ClientController implements Initializable {
     public void close() {
         Platform.exit();
     }
-
 
 
     @Override

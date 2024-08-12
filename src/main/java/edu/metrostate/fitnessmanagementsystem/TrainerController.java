@@ -77,7 +77,7 @@ public class TrainerController implements Initializable {
     public void displayUsername() {
         String user = SessionManager.username;
 
-        user = user.substring(0,1).toUpperCase() + user.substring(1);
+        user = user.substring(0, 1).toUpperCase() + user.substring(1);
 
         trainerUser.setText(user);
     }
@@ -88,8 +88,33 @@ public class TrainerController implements Initializable {
         String fitnessPlan = fitness_plan.getText();
 
         if (selectedClient != null && !fitnessPlan.isEmpty()) {
-            String sql = "INSERT INTO fitnessplan(clientId, plan) VALUES(?, ?)";
             connect = Database.connectDB();
+
+
+            String checkClientStatusSql = "SELECT status FROM client WHERE clientId = ?";
+            try (PreparedStatement statusCheckStmt = connect.prepareStatement(checkClientStatusSql)) {
+                statusCheckStmt.setString(1, selectedClient.getClientId());
+                try (ResultSet rs = statusCheckStmt.executeQuery()) {
+                    if (rs.next()) {
+                        String clientStatus = rs.getString("status");
+                        if ("Inactive".equalsIgnoreCase(clientStatus)) {
+
+                            Alert alert = new Alert(Alert.AlertType.ERROR);
+                            alert.setTitle("Error");
+                            alert.setHeaderText(null);
+                            alert.setContentText("Cannot send fitness plan. The selected client is inactive.");
+                            alert.showAndWait();
+                            fitness_plan.clear();
+                            return;
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+
+            String sql = "INSERT INTO fitnessplan(clientId, plan) VALUES(?, ?)";
             try (PreparedStatement pstmt = connect.prepareStatement(sql)) {
                 pstmt.setString(1, selectedClient.getClientId());
                 pstmt.setString(2, fitnessPlan);
@@ -103,7 +128,7 @@ public class TrainerController implements Initializable {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            fitness_plan.clear(); // Clear the text area after sending
+            fitness_plan.clear();
         } else {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
@@ -131,17 +156,13 @@ public class TrainerController implements Initializable {
             ClientData cd;
 
             while (result.next()) {
-                cd = new ClientData(result.getInt("id"), result.getString("clientId"),result.getString("name"),
-                        result.getString("username"),
-                        result.getString("password"), result.getString("address"),
-                        result.getString("gender"),result.getInt("phoneNum"),
-                        result.getString("status"), result.getString("trainerId"));
+                cd = new ClientData(result.getInt("id"), result.getString("clientId"), result.getString("name"), result.getString("username"), result.getString("password"), result.getString("address"), result.getString("gender"), result.getInt("phoneNum"), result.getString("status"), result.getString("trainerId"));
 
                 listData.add(cd);
             }
 
 
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -180,7 +201,7 @@ public class TrainerController implements Initializable {
             alert.setContentText("Are you sure you want to logout?");
             Optional<ButtonType> option = alert.showAndWait();
 
-            if(option.get().equals(ButtonType.OK)) {
+            if (option.get().equals(ButtonType.OK)) {
 
                 log_out_btn.getScene().getWindow().hide();
 
@@ -245,8 +266,8 @@ public class TrainerController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
-            clientShowData();
-            displayUsername();
+        clientShowData();
+        displayUsername();
         showClientsForLoggedInTrainer();
 
     }

@@ -4,6 +4,7 @@ public class TrainerData {
     private Integer id;
     private String trainerId;
     private String name;
+    private String email;
     private String username;
     private String password;
     private String address;
@@ -11,18 +12,21 @@ public class TrainerData {
     private Integer phoneNum;
     private String status;
 
-    public TrainerData(Integer id, String trainerId, String name, String username,
-                        String password, String address,
-                        String gender,Integer phoneNum, String status) {
+    public TrainerData(Integer id, String trainerId, String name, String email, String username, String password, String address, String gender, Integer phoneNum, String status) {
         this.id = id;
         this.trainerId = trainerId;
         this.name = name;
+        this.email = email;
         this.username = username;
         this.password = password;
         this.address = address;
         this.gender = gender;
         this.phoneNum = phoneNum;
         this.status = status;
+    }
+
+    public String getEmail() {
+        return email;
     }
 
     public Integer getId() {
@@ -61,7 +65,6 @@ public class TrainerData {
     public String getStatus() {
         return status;
     }
-
 
 
 }

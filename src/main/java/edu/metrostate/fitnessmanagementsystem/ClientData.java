@@ -4,6 +4,7 @@ public class ClientData {
     private Integer id;
     private String clientId;
     private String name;
+    private String email;
     private String username;
     private String password;
     private String address;
