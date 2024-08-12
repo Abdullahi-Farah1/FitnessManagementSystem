@@ -56,6 +56,11 @@
                               <FontAwesomeIconView glyphName="SIGN_OUT" size="3em" text="" wrappingWidth="29.285715103149414" />
                            </graphic>
                         </Button>
+                        <Label layoutX="786.0" layoutY="198.0" text="Logout" textFill="WHITE">
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                        </Label>
                      </children>
                      <styleClass>
                         <String fx:value="nav" />
