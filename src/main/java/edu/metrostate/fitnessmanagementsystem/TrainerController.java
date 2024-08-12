@@ -5,6 +5,7 @@ import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -63,11 +64,80 @@ public class TrainerController implements Initializable {
 
     @FXML
     private TableView<ClientData> trainerClient_tableview;
+    @FXML
+    private Label trainerUser;
 
     private Connection connect;
     private PreparedStatement prepare;
     private ResultSet result;
     private Statement statement;
+
+    private Database database = new Database();
+
+    public void displayUsername() {
+        String user = SessionManager.username;
+
+        user = user.substring(0, 1).toUpperCase() + user.substring(1);
+
+        trainerUser.setText(user);
+    }
+
+    @FXML
+    private void sendFitnessPlan(ActionEvent event) {
+        ClientData selectedClient = trainerClient_tableview.getSelectionModel().getSelectedItem();
+        String fitnessPlan = fitness_plan.getText();
+
+        if (selectedClient != null && !fitnessPlan.isEmpty()) {
+            connect = Database.connectDB();
+
+
+            String checkClientStatusSql = "SELECT status FROM client WHERE clientId = ?";
+            try (PreparedStatement statusCheckStmt = connect.prepareStatement(checkClientStatusSql)) {
+                statusCheckStmt.setString(1, selectedClient.getClientId());
+                try (ResultSet rs = statusCheckStmt.executeQuery()) {
+                    if (rs.next()) {
+                        String clientStatus = rs.getString("status");
+                        if ("Inactive".equalsIgnoreCase(clientStatus)) {
+
+                            Alert alert = new Alert(Alert.AlertType.ERROR);
+                            alert.setTitle("Error");
+                            alert.setHeaderText(null);
+                            alert.setContentText("Cannot send fitness plan. The selected client is inactive.");
+                            alert.showAndWait();
+                            fitness_plan.clear();
+                            return;
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+
+            String sql = "INSERT INTO fitnessplan(clientId, plan) VALUES(?, ?)";
+            try (PreparedStatement pstmt = connect.prepareStatement(sql)) {
+                pstmt.setString(1, selectedClient.getClientId());
+                pstmt.setString(2, fitnessPlan);
+                pstmt.executeUpdate();
+
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Success");
+                alert.setHeaderText(null);
+                alert.setContentText("Fitness plan sent successfully!");
+                alert.showAndWait();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            fitness_plan.clear();
+        } else {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText("Please select a client and write a fitness plan.");
+            alert.showAndWait();
+        }
+    }
+
 
     public ObservableList<ClientData> clientDataList() {
 
@@ -86,17 +156,13 @@ public class TrainerController implements Initializable {
             ClientData cd;
 
             while (result.next()) {
-                cd = new ClientData(result.getInt("id"), result.getString("clientId"),result.getString("name"),
-                        result.getString("username"),
-                        result.getString("password"), result.getString("address"),
-                        result.getString("gender"),result.getInt("phoneNum"),
-                        result.getString("status"));
+                cd = new ClientData(result.getInt("id"), result.getString("clientId"), result.getString("name"), result.getString("username"), result.getString("password"), result.getString("address"), result.getString("gender"), result.getInt("phoneNum"), result.getString("status"), result.getString("trainerId"));
 
                 listData.add(cd);
             }
 
 
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -135,7 +201,7 @@ public class TrainerController implements Initializable {
             alert.setContentText("Are you sure you want to logout?");
             Optional<ButtonType> option = alert.showAndWait();
 
-            if(option.get().equals(ButtonType.OK)) {
+            if (option.get().equals(ButtonType.OK)) {
 
                 log_out_btn.getScene().getWindow().hide();
 
@@ -182,8 +248,27 @@ public class TrainerController implements Initializable {
         Platform.exit();
     }
 
+    public void showClientsForLoggedInTrainer() {
+        TrainerData currentTrainer = SessionManager.getCurrentTrainer();
+
+        if (currentTrainer != null) {
+            ObservableList<ClientData> filteredClients = FXCollections.observableArrayList();
+            for (ClientData client : clientListData) {
+                if (currentTrainer.getTrainerId().equals(client.getTrainerId())) {
+                    filteredClients.add(client);
+                }
+            }
+            trainerClient_tableview.setItems(filteredClients);
+        }
+    }
+
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+
         clientShowData();
+        displayUsername();
+        showClientsForLoggedInTrainer();
+
     }
 }

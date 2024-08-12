@@ -42,7 +42,7 @@
                            </children>
                         </AnchorPane>
                         <FontAwesomeIconView glyphName="USER" layoutX="407.0" layoutY="144.0" size="10em" />
-                        <Label layoutX="410.0" layoutY="183.0" text="Trainer">
+                        <Label fx:id="trainerUser" alignment="CENTER" layoutX="369.0" layoutY="183.0" prefHeight="32.0" prefWidth="175.0" text="Trainer">
                            <font>
                               <Font name="Tahoma" size="25.0" />
                            </font>
@@ -100,7 +100,7 @@
                                           <Font name="Tahoma" size="16.0" />
                                        </font>
                                     </Label>
-                                    <Button fx:id="fitnessplan_btn" layoutX="166.0" layoutY="222.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="104.0" stylesheets="@trainerDesign.css" text="Send">
+                                    <Button fx:id="fitnessplan_btn" layoutX="166.0" layoutY="222.0" mnemonicParsing="false" onAction="#sendFitnessPlan" prefHeight="50.0" prefWidth="104.0" stylesheets="@trainerDesign.css" text="Send">
                                        <font>
                                           <Font name="Arial" size="15.0" />
                                        </font>

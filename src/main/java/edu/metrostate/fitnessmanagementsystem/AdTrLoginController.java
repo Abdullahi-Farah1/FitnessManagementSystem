@@ -9,9 +9,11 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
 import java.io.IOException;
@@ -19,6 +21,7 @@ import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class AdTrLoginController implements Initializable {
@@ -85,12 +88,19 @@ public class AdTrLoginController implements Initializable {
     private ResultSet result;
 
     public void adminlogin() {
-
         String sql = "SELECT * FROM admin WHERE username = ? AND password = ?";
-
         connect = Database.connectDB();
 
         try {
+            if (connect == null) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Database Error");
+                alert.setHeaderText(null);
+                alert.setContentText("Cannot connect to the database. Please check your connection.");
+                alert.showAndWait();
+                return;
+            }
+
             prepare = connect.prepareStatement(sql);
             prepare.setString(1, admin_username.getText());
             prepare.setString(2, admin_password.getText());
@@ -112,13 +122,31 @@ public class AdTrLoginController implements Initializable {
                     alert.setContentText("Login Successful");
                     alert.showAndWait();
 
-                    // Load the new scene
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("admin.fxml"));
                     Parent root = loader.load();
 
-                    Stage stage = (Stage) admin_loginBtn.getScene().getWindow();
-                    stage.setScene(new Scene(root));
-                    stage.show();
+                    Stage newStage = new Stage();
+                    newStage.initStyle(StageStyle.TRANSPARENT);
+                    root.setOnMousePressed((MouseEvent event) -> {
+                        x = event.getSceneX();
+                        y = event.getSceneY();
+                    });
+
+                    root.setOnMouseDragged((MouseEvent event) -> {
+                        newStage.setX(event.getScreenX() - x);
+                        newStage.setY(event.getScreenY() - y);
+                        newStage.setOpacity(.8);
+                    });
+
+                    root.setOnMouseReleased((MouseEvent event) -> {
+                        newStage.setOpacity(1);
+                    });
+
+                    newStage.setScene(new Scene(root));
+                    newStage.show();
+
+                    Stage currentStage = (Stage) admin_loginBtn.getScene().getWindow();
+                    currentStage.hide();
                 } else {
                     alert = new Alert(Alert.AlertType.ERROR);
                     alert.setTitle("Error");
@@ -131,12 +159,22 @@ public class AdTrLoginController implements Initializable {
             e.printStackTrace();
         }
     }
+
+
     public void trainerLogin() {
         String sql = "SELECT * FROM trainers WHERE username = ? AND password = ?";
-
         connect = Database.connectDB();
 
         try {
+            if (connect == null) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Database Error");
+                alert.setHeaderText(null);
+                alert.setContentText("Cannot connect to the database. Please check your connection.");
+                alert.showAndWait();
+                return;
+            }
+
             prepare = connect.prepareStatement(sql);
             prepare.setString(1, trainer_username.getText());
             prepare.setString(2, trainer_password.getText());
@@ -152,18 +190,44 @@ public class AdTrLoginController implements Initializable {
                 alert.showAndWait();
             } else {
                 if (result.next()) {
+                    TrainerData loggedInTrainer = new TrainerData(result.getInt("id"), result.getString("trainerId"), result.getString("name"), result.getString("email"), result.getString("username"), result.getString("password"), result.getString("address"), result.getString("gender"), result.getInt("phoneNum"), result.getString("status"));
+
+                    SessionManager.setCurrentTrainer(loggedInTrainer);
+
                     alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setTitle("Success");
                     alert.setHeaderText(null);
                     alert.setContentText("Login Successful");
                     alert.showAndWait();
 
+                    SessionManager.username = trainer_username.getText();
+
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("trainer.fxml"));
                     Parent root = loader.load();
 
-                    Stage stage = (Stage) trainer_loginBtn.getScene().getWindow();
+                    Stage stage = new Stage();
+                    stage.initStyle(StageStyle.TRANSPARENT);
+
+                    root.setOnMousePressed((MouseEvent event) -> {
+                        x = event.getSceneX();
+                        y = event.getSceneY();
+                    });
+
+                    root.setOnMouseDragged((MouseEvent event) -> {
+                        stage.setX(event.getScreenX() - x);
+                        stage.setY(event.getScreenY() - y);
+                        stage.setOpacity(.8);
+                    });
+
+                    root.setOnMouseReleased((MouseEvent event) -> {
+                        stage.setOpacity(1);
+                    });
+
                     stage.setScene(new Scene(root));
                     stage.show();
+
+                    Stage currentStage = (Stage) trainer_loginBtn.getScene().getWindow();
+                    currentStage.hide();
                 } else {
                     alert = new Alert(Alert.AlertType.ERROR);
                     alert.setTitle("Error");
@@ -176,6 +240,7 @@ public class AdTrLoginController implements Initializable {
             e.printStackTrace();
         }
     }
+
 
     public void adminSlider() {
         TranslateTransition slider1 = new TranslateTransition();
@@ -229,8 +294,44 @@ public class AdTrLoginController implements Initializable {
 
     }
 
-    public void switchScene() throws IOException {
-        MainApplication m = new MainApplication();
-        m.changeScene("main-login.fxml");
+    private double x = 0;
+    private double y = 0;
+
+    public void switchScene() {
+
+        try {
+
+            changetoclient.getScene().getWindow().hide();
+
+            Parent root = FXMLLoader.load(getClass().getResource("main-login.fxml"));
+
+            Stage stage = new Stage();
+            Scene scene = new Scene(root);
+
+            root.setOnMousePressed((MouseEvent event) -> {
+                x = event.getSceneX();
+                y = event.getSceneY();
+            });
+
+            root.setOnMouseDragged((MouseEvent event) -> {
+                stage.setX(event.getScreenX() - x);
+                stage.setY(event.getScreenY() - y);
+
+                stage.setOpacity(.8);
+            });
+
+            root.setOnMouseReleased((MouseEvent event) -> {
+                stage.setOpacity(1);
+            });
+
+            stage.initStyle(StageStyle.TRANSPARENT);
+
+            stage.setScene(scene);
+            stage.show();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
+
 }

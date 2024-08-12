@@ -4,6 +4,7 @@ public class ClientData {
     private Integer id;
     private String clientId;
     private String name;
+    private String email;
     private String username;
     private String password;
     private String address;
@@ -11,7 +12,10 @@ public class ClientData {
     private Integer phoneNum;
     private String status;
 
-    public ClientData(Integer id, String clientId, String name, String username, String password, String address, String gender, Integer phoneNum, String status) {
+
+    private String trainerId;
+
+    public ClientData(Integer id, String clientId, String name, String username, String password, String address, String gender, Integer phoneNum, String status, String trainerId) {
         this.id = id;
         this.clientId = clientId;
         this.name = name;
@@ -21,6 +25,7 @@ public class ClientData {
         this.gender = gender;
         this.phoneNum = phoneNum;
         this.status = status;
+        this.trainerId = trainerId;
     }
 
 
@@ -58,5 +63,13 @@ public class ClientData {
 
     public String getStatus() {
         return status;
+    }
+
+    public String getTrainerId() {
+        return trainerId;
+    }
+
+    public void setTrainerId(String trainerId) {
+        this.trainerId = trainerId;
     }
 }

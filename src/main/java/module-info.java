@@ -4,6 +4,7 @@ module edu.metrostate.fitnessmanagementsystem {
     requires de.jensd.fx.glyphs.fontawesome;
     requires java.sql;
     requires jdk.compiler;
+    requires org.mariadb.jdbc;
 
 
     opens edu.metrostate.fitnessmanagementsystem to javafx.fxml;
